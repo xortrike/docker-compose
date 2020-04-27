@@ -53,5 +53,6 @@ services:
     volumes:
       - ${LOCAL_DIR_WEB}:${WORKING_DIR}
       - ${CONFIG_DIR_PHP}/php.ini:/usr/local/etc/php/php.ini
+      - ${CONFIG_DIR_PHP}/auth.json:/root/.composer/auth.json
     working_dir: ${WORKING_DIR}
     hostname: ${HOST_NAME}

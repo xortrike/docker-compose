@@ -30,4 +30,5 @@ tar -cvjf "${path}/${name}" \
     --directory="${path}/" "php/php-7.2-fpm" \
     --directory="${path}/" "php/php-7.3-fpm" \
     --directory="${path}/" "php/php-7.4-fpm" \
+    --directory="${path}/" "php/auth.json" \
     --directory="${path}/" "php/php.ini"

@@ -1,51 +1,47 @@
 #!/bin/bash
 
-declare -A projects
-projects=(
-	[1]="Magento 2:/home/user/projects/magento2/docker"
+declare -a PROJECTS=(
+	"Magento 2:/var/www/projects/magento/docker"
 )
 
 function RenderProjects
 {
 	clear
 	local CLREOL=$'\x1B[K'
-	echo -e "\e[48;5;4m            \e[1m\e[97mDocker - Projects${CLREOL}\e[0m\e[49m"
-	echo ""
-	for index in "${!projects[@]}"
+	echo -e "\e[48;5;4m            \e[1m\e[97mDocker - Projects${CLREOL}\e[0m\e[49m\n"
+	for i in ${!PROJECTS[@]}
 	do
-		IFS=":" read -r -a buffer <<< "${projects[$index]}"
-		# echo ${buffer[0]}" = "${buffer[1]}
-		printf "%3d - %s\n" $index "${buffer[0]}"
+		IFS=":" read -r -a buffer <<< "${PROJECTS[$i]}"
+		printf "%3d - %s\n" $((i+1)) "${buffer[0]}"
 	done
 	echo ""
 }
 
 function StartProject
 {
-	if [[ ! -z ${projects[$1]} ]]
+	if [[ ! -z ${PROJECTS[$1]} ]]
 	then
 		clear
-		IFS=":" read -r -a buffer <<< "${projects[$1]}"
+		IFS=":" read -r -a buffer <<< "${PROJECTS[$1]}"
 		docker-compose --project-directory "${buffer[1]}" --file "${buffer[1]}/docker-compose.yml" up -d
-		ShowContainers "$1"
+		RenderContainers "$1"
 	fi
 }
 
 function StopProject
 {
-	if [[ ! -z ${projects[$1]} ]]
+	if [[ ! -z ${PROJECTS[$1]} ]]
 	then
 		clear
-		IFS=":" read -r -a buffer <<< "${projects[$1]}"
+		IFS=":" read -r -a buffer <<< "${PROJECTS[$1]}"
 		docker-compose --project-directory "${buffer[1]}" --file "${buffer[1]}/docker-compose.yml" stop
 	fi
 }
 
-function ShowContainers
+function RenderContainers
 {
 	local containers=($(docker container ls --format "{{.Names}}"))
 	local count=$(expr ${#containers[@]} + 1)
-
 	local container=""
 
 	while [[ $container != "0" ]]
@@ -53,13 +49,16 @@ function ShowContainers
 		clear
 		local CLREOL=$'\x1B[K'
 		echo -e "\e[48;5;4m            \e[1m\e[97mDocker - Containers${CLREOL}\e[0m\e[49m"
-		echo ""
+
+		IFS=":" read -ra buffer <<< "${PROJECTS[$1]}"
+		echo -e "${buffer[0]}\n"
+
 		for i in "${!containers[@]}"
 		do
 			printf "%3d - %s\n" $(expr $i + 1) ${containers[$i]}
 		done
 		echo ""
-		read -p "Enter menu number: " container
+		read -p "Menu Number: " container
 
 		if [[ $container > 0 && $container < $count ]]
 		then
@@ -72,20 +71,18 @@ function ShowContainers
 	StopProject "$1"
 }
 
-# Project
-project=""
+# Select Project Index
+PROJECT=""
 
-while [[ $project != "0" ]]
+while [[ $PROJECT != "0" ]]
 do
-	# Render Projects
 	RenderProjects
+	read -p "Menu Number: " PROJECT
 
-	read -p "Enter menu number: " project
-
-	if [[ ! -z "$project" && "$project" != "0" ]]
+	if [[ ! -z "$PROJECT" && "$PROJECT" != "0" ]]
 	then
-		StartProject "$project"
+		StartProject $(($PROJECT-1))
 	fi
 done
 
-echo "Bye Docker Projects"
+echo "Docker projects closed."

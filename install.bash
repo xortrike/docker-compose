@@ -126,12 +126,12 @@ fi
 tar xvC "${path}/docker" -f "${path}/${name}"
 
 # Step 3 - SSL sertifacation
-setCertificate ${config["host_name"]}
+# setCertificate ${config["host_name"]}
 
 # Step 4 - Configuration
-search="example.local"
-replace=${config["host_name"]}
-sed -i "s/${search}/${replace}/g" "${path}/docker/nginx/magento.conf"
+# search="example.local"
+# replace=${config["host_name"]}
+# sed -i "s/${search}/${replace}/g" "${path}/docker/nginx/magento.conf"
 
 search="HOST_NAME=example.local"
 replace="HOST_NAME=${config["host_name"]}"

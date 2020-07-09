@@ -12,6 +12,7 @@ tar -cvjf "${path}/${name}" \
     --directory="${path}/" ".env" \
     --directory="${path}/" "docker-compose.yml" \
     --directory="${path}/" "nginx/Dockerfile" \
+    --directory="${path}/" "nginx/magento.conf" \
     --directory="${path}/" "nginx/cert/device.key" \
     --directory="${path}/" "nginx/cert/dhparam.pem" \
     --directory="${path}/" "nginx/openssl/v3.ext" \
@@ -21,7 +22,6 @@ tar -cvjf "${path}/${name}" \
     --directory="${path}/" "nginx/openssl/rootCA.srl" \
     --directory="${path}/" "nginx/openssl/dhparam.pem" \
     --directory="${path}/" "nginx/openssl/create.sh" \
-    --directory="${path}/" "nginx/magento.conf" \
     --directory="${path}/" "mariadb/Dockerfile" \
     --directory="${path}/" "mariadb/mysql.cnf" \
     --directory="${path}/" "php/php-5.6-fpm" \

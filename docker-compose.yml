@@ -2,27 +2,27 @@ version: "3.7"
 
 services:
 
-  # Nginx
-  nginx:
+  # PHP + Apache
+  apache:
     build:
-      context: ${CONFIG_DIR_NGINX}
-      dockerfile: Dockerfile
-    container_name: ${COMPOSE_PROJECT_NAME}_nginx
-    volumes:
-      - ${LOCAL_DIR_WEB}:${WORKING_DIR}
-      - ${LOCAL_DIR_LOG}/nginx:/var/log/nginx
-      - ${CONFIG_DIR_NGINX}/cert:/etc/nginx/cert
-      # - ${CONFIG_DIR_NGINX}/nginx.conf:/etc/nginx/nginx.conf
-      # - ${CONFIG_DIR_NGINX}/default.conf:/etc/nginx/conf.d/default.conf
-      - ${CONFIG_DIR_NGINX}/magento.conf:/etc/nginx/conf.d/magento.conf
+      context: ${CONFIG_DIR_APACHE}
+      dockerfile: php-72-apache
+    container_name: ${COMPOSE_PROJECT_NAME}_apache
+    environment:
+      PHP_IDE_CONFIG: "serverName=${HOST_NAME}"
+    expose:
+      - 9000
     ports:
       - 80:80
       - 443:443
-    depends_on:
-      - mariadb
-      - php
+    volumes:
+      - ${LOCAL_DIR_WEB}:${WORKING_DIR}
+      - ${CONFIG_DIR_APACHE}/apache2.conf:/etc/apache2/apache2.conf
+      - ${CONFIG_DIR_APACHE}/default.conf:/etc/apache2/sites-available/000-default.conf
+      - ${CONFIG_DIR_APACHE}/php.ini:/usr/local/etc/php/php.ini
+      - ${CONFIG_DIR_APACHE}/auth.json:/root/.composer/auth.json
     working_dir: ${WORKING_DIR}
-    # hostname: ${HOST_NAME}
+    hostname: ${HOST_NAME}
 
   # MariaDB
   mariadb:
@@ -38,21 +38,3 @@ services:
     ports:
       - 3306:3306
     working_dir: /dump
-    # hostname: ${HOST_NAME}
-
-  # PHP
-  php:
-    build:
-      context: ${CONFIG_DIR_PHP}
-      dockerfile: php-7.2-fpm
-    container_name: ${COMPOSE_PROJECT_NAME}_php
-    environment:
-      PHP_IDE_CONFIG: "serverName=${HOST_NAME}"
-    expose:
-      - 9000
-    volumes:
-      - ${LOCAL_DIR_WEB}:${WORKING_DIR}
-      - ${CONFIG_DIR_PHP}/php.ini:/usr/local/etc/php/php.ini
-      - ${CONFIG_DIR_PHP}/auth.json:/root/.composer/auth.json
-    working_dir: ${WORKING_DIR}
-    hostname: ${HOST_NAME}

@@ -1,5 +1,9 @@
 # Docker Compose
 
+## Chrome
+Configuration Google Chrome for SSL certificate.
+Add file "rootCA.crt" to: Settings -> Advanced -> Privacy and Security -> Manage Certificates -> Authorities -> Import
+
 ## MySQL
 ```sh
 /usr/bin/mysql_secure_installation

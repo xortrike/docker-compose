@@ -10,10 +10,12 @@ fi
 tar -cvjf "${path}/${name}" \
     --directory="${path}/" ".env" \
     --directory="${path}/" "docker-compose.yml" \
+    --directory="${path}/" "apache/cert" \
+    --directory="${path}/" "apache/openssl" \
     --directory="${path}/" "apache/apache2.conf" \
     --directory="${path}/" "apache/auth.json" \
     --directory="${path}/" "apache/default.conf" \
-    --directory="${path}/" "apache/msmtprc" \
+    --directory="${path}/" "apache/msmtp.rc" \
     --directory="${path}/" "apache/php.ini" \
     --directory="${path}/" "apache/php-56-apache" \
     --directory="${path}/" "apache/php-70-apache" \

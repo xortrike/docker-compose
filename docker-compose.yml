@@ -1,8 +1,8 @@
-version: "3.7"
+version: "3.3"
 
 services:
 
-  # PHP + Apache
+  # Apache + PHP
   apache:
     build:
       context: ${CONFIG_DIR_APACHE}
@@ -12,6 +12,8 @@ services:
       PHP_IDE_CONFIG: "serverName=${HOST_NAME}"
     expose:
       - 9000
+    depends_on:
+      - mariadb
     ports:
       - 80:80
       - 443:443
@@ -21,6 +23,9 @@ services:
       - ${CONFIG_DIR_APACHE}/default.conf:/etc/apache2/sites-available/000-default.conf
       - ${CONFIG_DIR_APACHE}/php.ini:/usr/local/etc/php/php.ini
       - ${CONFIG_DIR_APACHE}/auth.json:/root/.composer/auth.json
+      # - ${CONFIG_DIR_APACHE}/msmtp.rc:/etc/msmtprc
+      - ${CONFIG_DIR_APACHE}/cert:/etc/apache2/cert
+      - ${LOCAL_DIR_LOG}/apache:/var/log/apache2
     working_dir: ${WORKING_DIR}
     hostname: ${HOST_NAME}
 

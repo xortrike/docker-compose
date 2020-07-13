@@ -23,7 +23,7 @@ services:
       - ${CONFIG_DIR_APACHE}/default.conf:/etc/apache2/sites-available/000-default.conf
       - ${CONFIG_DIR_APACHE}/php.ini:/usr/local/etc/php/php.ini
       - ${CONFIG_DIR_APACHE}/auth.json:/root/.composer/auth.json
-      # - ${CONFIG_DIR_APACHE}/msmtp.rc:/etc/msmtprc
+      # - ${CONFIG_DIR_APACHE}/msmtp.rc:/etc/msmtp.rc
       - ${CONFIG_DIR_APACHE}/cert:/etc/apache2/cert
       - ${LOCAL_DIR_LOG}/apache:/var/log/apache2
     working_dir: ${WORKING_DIR}

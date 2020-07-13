@@ -10,7 +10,6 @@ fi
 tar -cvjf "${path}/${name}" \
     --directory="${path}/" ".env" \
     --directory="${path}/" "docker-compose.yml" \
-    --directory="${path}/" "apache/cert" \
     --directory="${path}/" "apache/openssl" \
     --directory="${path}/" "apache/apache2.conf" \
     --directory="${path}/" "apache/auth.json" \

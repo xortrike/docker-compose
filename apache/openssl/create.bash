@@ -7,6 +7,11 @@ then
   exit;
 fi
 
+if [ -f $1 ]
+then
+	rm -rf $1
+fi
+
 if [ -f device.key ]; then
   KEY_OPT="-key"
 else

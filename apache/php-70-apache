@@ -61,8 +61,8 @@ RUN pecl install xdebug-2.6.0 && \
 
 # Install mSMTP
 RUN apt-get install -y msmtp
-COPY msmtprc /etc/msmtprc
-RUN chmod 600 /etc/msmtprc
+COPY msmtp.rc /etc/msmtp.rc
+RUN chmod 600 /etc/msmtp.rc
 
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

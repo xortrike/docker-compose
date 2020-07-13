@@ -50,10 +50,6 @@ function setCertificate
 		exit;
 	fi
 
-	if [ -f ${path}"/docker/apache/cert/$1" ]; then
-		rm -rf ${path}"/docker/apache/cert/$1"
-	fi
-
 	if [ -f device.key ]; then
 		KEY_OPT="-key"
 	else
@@ -62,6 +58,11 @@ function setCertificate
 
 	DOMAIN=$1
 	COMMON_NAME=${2:-$1}
+
+	if [ -f $DOMAIN ]
+	then
+		rm -rf $DOMAIN
+	fi
 
 	SUBJECT="/C=CA/ST=None/L=NB/O=None/CN=$COMMON_NAME"
 	NUM_OF_DAYS=999
@@ -78,6 +79,10 @@ function setCertificate
 	mv device.crt $DOMAIN/certificate-file.crt
 	cp device.key $DOMAIN/certificate-key-file.key
 
+	if [ ! -f "../cert" ]
+	then
+		mkdir -p "../cert"
+	fi
 	mv $DOMAIN "../cert"
 	cd ${path}
 }
@@ -126,12 +131,12 @@ fi
 tar xvC "${path}/docker" -f "${path}/${name}"
 
 # Step 3 - SSL sertifacation
-# setCertificate ${config["host_name"]}
+setCertificate ${config["host_name"]}
 
 # Step 4 - Configuration
-# search="example.local"
-# replace=${config["host_name"]}
-# sed -i "s/${search}/${replace}/g" "${path}/docker/nginx/magento.conf"
+search="example.local"
+replace=${config["host_name"]}
+sed -i "s/${search}/${replace}/g" "${path}/docker/apache/default.conf"
 
 search="HOST_NAME=example.local"
 replace="HOST_NAME=${config["host_name"]}"

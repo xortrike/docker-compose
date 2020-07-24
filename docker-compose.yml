@@ -22,8 +22,7 @@ services:
       # Apache
       - ${CONFIG_DIR_APACHE}/apache2.conf:/etc/apache2/apache2.conf
       - ${CONFIG_DIR_APACHE}/default.conf:/etc/apache2/sites-available/000-default.conf
-      - ${LOCAL_DIR_LOG}/apache/access.log:/var/log/apache2/access.log
-      - ${LOCAL_DIR_LOG}/apache/error.log:/var/log/apache2/error.log
+      - ${LOCAL_DIR_LOG}/apache:/var/log/apache2
       - ${CONFIG_DIR_APACHE}/cert:/etc/apache2/cert
       # PHP
       - ${CONFIG_DIR_APACHE}/php.ini:/usr/local/etc/php/php.ini

@@ -38,11 +38,6 @@ function CreateDirectory
 			fi
 		fi
 	done
-
-	touch "${dir}/logs/apache/access.log"
-	touch "${dir}/logs/apache/error.log"
-	sudo chmod -R 775 "${dir}/logs/apache/*"
-	sudo chown -R $USER:docker "${dir}/logs/apache/*"
 }
 
 function setCertificate

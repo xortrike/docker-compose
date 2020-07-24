@@ -15,6 +15,7 @@ services:
       # - ${CONFIG_DIR_NGINX}/nginx.conf:/etc/nginx/nginx.conf
       # - ${CONFIG_DIR_NGINX}/default.conf:/etc/nginx/conf.d/default.conf
       - ${CONFIG_DIR_NGINX}/magento.conf:/etc/nginx/conf.d/magento.conf
+      # - ${CONFIG_DIR_NGINX}/joomla.conf:/etc/nginx/conf.d/joomla.conf
     ports:
       - 80:80
       - 443:443
@@ -22,7 +23,7 @@ services:
       - mariadb
       - php
     working_dir: ${WORKING_DIR}
-    # hostname: ${HOST_NAME}
+    hostname: ${HOST_NAME}
 
   # MariaDB
   mariadb:
@@ -38,7 +39,6 @@ services:
     ports:
       - 3306:3306
     working_dir: /dump
-    # hostname: ${HOST_NAME}
 
   # PHP
   php:
@@ -55,4 +55,15 @@ services:
       - ${CONFIG_DIR_PHP}/php.ini:/usr/local/etc/php/php.ini
       - ${CONFIG_DIR_PHP}/auth.json:/root/.composer/auth.json
     working_dir: ${WORKING_DIR}
+    hostname: ${HOST_NAME}
+
+  # SMTP Server
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: ${COMPOSE_PROJECT_NAME}_mailhog
+    expose:
+      - 1025
+    ports:
+      - 1025:1025
+      - 8025:8025
     hostname: ${HOST_NAME}

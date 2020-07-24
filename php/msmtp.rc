@@ -1,0 +1,16 @@
+defaults
+tls on
+tls_starttls on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+logfile /var/log/msmtp.log
+
+account mailtrap
+host smtp.mailtrap.io
+port 2525
+protocol smtp
+auth on
+from admin@testing.local
+user <user>
+password <password>
+
+account default : mailtrap

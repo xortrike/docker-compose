@@ -4,6 +4,9 @@
 Configuration Google Chrome for SSL certificate.
 Add file "rootCA.crt" to: Settings -> Advanced -> Privacy and Security -> Manage Certificates -> Authorities -> Import
 
+## MailHog
+Open web page mail server: http://127.0.0.1:8025/
+
 ## MySQL
 ```sh
 /usr/bin/mysql_secure_installation

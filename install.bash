@@ -38,6 +38,11 @@ function CreateDirectory
 			fi
 		fi
 	done
+
+	touch "${dir}/logs/apache/access.log"
+	touch "${dir}/logs/apache/error.log"
+	sudo chmod -R 775 "${dir}/logs/apache/*"
+	sudo chown -R $USER:docker "${dir}/logs/apache/*"
 }
 
 function setCertificate
@@ -59,8 +64,7 @@ function setCertificate
 	DOMAIN=$1
 	COMMON_NAME=${2:-$1}
 
-	if [ -f $DOMAIN ]
-	then
+	if [ -f $DOMAIN ]; then
 		rm -rf $DOMAIN
 	fi
 
@@ -79,8 +83,7 @@ function setCertificate
 	mv device.crt $DOMAIN/certificate-file.crt
 	cp device.key $DOMAIN/certificate-key-file.key
 
-	if [ ! -f "../cert" ]
-	then
+	if [ ! -f "../cert" ]; then
 		mkdir -p "../cert"
 	fi
 	mv $DOMAIN "../cert"
@@ -119,7 +122,7 @@ fi
 
 
 
-echo "Installing..."
+echo -e "\nInstalling..."
 # Step 1 - Create Directory
 CreateDirectory $path
 

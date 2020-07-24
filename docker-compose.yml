@@ -19,13 +19,19 @@ services:
       - 443:443
     volumes:
       - ${LOCAL_DIR_WEB}:${WORKING_DIR}
+      # Apache
       - ${CONFIG_DIR_APACHE}/apache2.conf:/etc/apache2/apache2.conf
       - ${CONFIG_DIR_APACHE}/default.conf:/etc/apache2/sites-available/000-default.conf
-      - ${CONFIG_DIR_APACHE}/php.ini:/usr/local/etc/php/php.ini
-      - ${CONFIG_DIR_APACHE}/auth.json:/root/.composer/auth.json
-      # - ${CONFIG_DIR_APACHE}/msmtp.rc:/etc/msmtp.rc
+      - ${LOCAL_DIR_LOG}/apache/access.log:/var/log/apache2/access.log
+      - ${LOCAL_DIR_LOG}/apache/error.log:/var/log/apache2/error.log
       - ${CONFIG_DIR_APACHE}/cert:/etc/apache2/cert
-      - ${LOCAL_DIR_LOG}/apache:/var/log/apache2
+      # PHP
+      - ${CONFIG_DIR_APACHE}/php.ini:/usr/local/etc/php/php.ini
+      # Composer
+      - ${CONFIG_DIR_APACHE}/auth.json:/root/.composer/auth.json
+      # - ${CONFIG_DIR_APACHE}/auth.json:${WORKING_DIR}/auth.json
+      # SMTP
+      # - ${CONFIG_DIR_APACHE}/msmtp.rc:/etc/msmtp.rc
     working_dir: ${WORKING_DIR}
     hostname: ${HOST_NAME}
 
@@ -43,3 +49,14 @@ services:
     ports:
       - 3306:3306
     working_dir: /dump
+
+  # SMTP Server
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: ${COMPOSE_PROJECT_NAME}_mailhog
+    expose:
+      - 1025
+    ports:
+      - 1025:1025
+      - 8025:8025
+    hostname: ${HOST_NAME}

@@ -5,12 +5,12 @@ tls_trust_file /etc/ssl/certs/ca-certificates.crt
 logfile /var/log/msmtp.log
 
 account mailtrap
-host <smtp-host>
+host smtp.mailtrap.io
 port 2525
 protocol smtp
 auth on
-from <from-email>
-user <user-name>
-password <user-password>
+from admin@testing.local
+user <user>
+password <password>
 
 account default : mailtrap

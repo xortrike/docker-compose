@@ -7,12 +7,17 @@ RUN ln -snf /usr/share/zoneinfo/$TIME_ZONA /etc/localtime && echo $TIME_ZONA > /
 RUN apt-get update && \
     apt-get install -y sudo nano wget zlib1g-dev cron git
 
+# Enable apache modules
+RUN a2enmod rewrite ssl
+
 # Zip
 RUN apt-get install -y libzip-dev unzip && \
     docker-php-ext-install zip
 
 # Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer
+
+##---------- PHP ----------##
 
 # MySQL
 RUN docker-php-ext-install mysqli pdo pdo_mysql && \
@@ -21,17 +26,17 @@ RUN docker-php-ext-install mysqli pdo pdo_mysql && \
 
 # Modules
 RUN docker-php-ext-install bcmath sockets
-# soap
+# - soap
 RUN apt-get install -y libxml2-dev && \
     docker-php-ext-install soap
-#intl
+# - intl
 RUN apt-get install -y libicu-dev g++ && \
     docker-php-ext-configure intl && \
     docker-php-ext-install intl
-# xsl
+# - xsl
 RUN apt-get install -y libxslt-dev && \
     docker-php-ext-install xsl
-# mcrypt
+# - mcrypt
 RUN apt-get install -y libmcrypt-dev && \
     docker-php-ext-install mcrypt
 
@@ -53,19 +58,25 @@ RUN docker-php-ext-configure gd \
     --enable-gd-native-ttf
 RUN docker-php-ext-install gd
 
-RUN a2enmod rewrite ssl
+##---------- X-DEBUG ----------##
 
 # X-Debug - version log https://xdebug.org/download
 RUN pecl install xdebug-2.5.5 && \
-   docker-php-ext-enable xdebug
+    docker-php-ext-enable xdebug
 
-# Install mSMTP
-RUN apt-get install -y msmtp
-COPY msmtp.rc /etc/msmtp.rc
-RUN chmod 600 /etc/msmtp.rc
+##---------- SMTP ----------##
+
+# Install SMTP client
+# RUN apt-get install -y msmtp
+# COPY msmtp.rc /etc/msmtp.rc
+# RUN chmod 600 /etc/msmtp.rc
+
+# Connect to MailHog SMTP server
+ADD ./mhsendmail_linux_amd64 /usr/local/bin/
+RUN mv /usr/local/bin/mhsendmail_linux_amd64 /usr/local/bin/mhsendmail
+RUN chmod +x /usr/local/bin/mhsendmail
+
+##---------- END ----------##
 
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# Connect as www-data
-# USER www-data

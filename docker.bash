@@ -84,6 +84,16 @@ function RenderContainers
 	StopProject "$1"
 }
 
+function DownProject
+{
+	if [[ ! -z ${PROJECTS[$1]} ]]
+	then
+		clear
+		IFS=";" read -r -a buffer <<< "${PROJECTS[$1]}"
+		docker-compose --project-directory "${buffer[1]}" --file "${buffer[1]}/docker-compose.yml" down
+	fi
+}
+
 # Select Project Index
 PROJECT=""
 
@@ -94,9 +104,10 @@ do
 
 	if [[ ! -z "$PROJECT" && "$PROJECT" != "0" ]]
 	then
-		if [[ "$PROJECT" == *"+b"* ]]
-		then
+		if [[ "$PROJECT" == *"+b"* ]]; then
 			BuildProject $(($PROJECT-1))
+		elif [[ "$PROJECT" == *"+d"* ]]; then
+			DownProject $(($PROJECT-1))
 		else
 			StartProject $(($PROJECT-1))
 		fi

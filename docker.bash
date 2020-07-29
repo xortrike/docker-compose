@@ -1,7 +1,7 @@
 #!/bin/bash
 
 declare -a PROJECTS=(
-	"Magento 2:/var/www/projects/magento/docker"
+	"Magento 2;/var/www/projects/magento/docker"
 )
 
 function RenderProjects
@@ -11,10 +11,23 @@ function RenderProjects
 	echo -e "\e[48;5;4m            \e[1m\e[97mDocker - Projects${CLREOL}\e[0m\e[49m\n"
 	for i in ${!PROJECTS[@]}
 	do
-		IFS=":" read -r -a buffer <<< "${PROJECTS[$i]}"
+		IFS=";" read -r -a buffer <<< "${PROJECTS[$i]}"
 		printf "%3d - %s\n" $((i+1)) "${buffer[0]}"
 	done
 	echo ""
+}
+
+function BuildProject
+{
+	if [[ ! -z ${PROJECTS[$1]} ]]
+	then
+		clear
+		IFS=";" read -r -a buffer <<< "${PROJECTS[$1]}"
+		docker-compose --project-directory "${buffer[1]}" --file "${buffer[1]}/docker-compose.yml" build
+		echo ""
+		read -p "Press [Enter] key to continue..."
+		echo ""
+	fi
 }
 
 function StartProject
@@ -22,7 +35,7 @@ function StartProject
 	if [[ ! -z ${PROJECTS[$1]} ]]
 	then
 		clear
-		IFS=":" read -r -a buffer <<< "${PROJECTS[$1]}"
+		IFS=";" read -r -a buffer <<< "${PROJECTS[$1]}"
 		docker-compose --project-directory "${buffer[1]}" --file "${buffer[1]}/docker-compose.yml" up -d
 		RenderContainers "$1"
 	fi
@@ -33,7 +46,7 @@ function StopProject
 	if [[ ! -z ${PROJECTS[$1]} ]]
 	then
 		clear
-		IFS=":" read -r -a buffer <<< "${PROJECTS[$1]}"
+		IFS=";" read -r -a buffer <<< "${PROJECTS[$1]}"
 		docker-compose --project-directory "${buffer[1]}" --file "${buffer[1]}/docker-compose.yml" stop
 	fi
 }
@@ -50,7 +63,7 @@ function RenderContainers
 		local CLREOL=$'\x1B[K'
 		echo -e "\e[48;5;4m            \e[1m\e[97mDocker - Containers${CLREOL}\e[0m\e[49m"
 
-		IFS=":" read -ra buffer <<< "${PROJECTS[$1]}"
+		IFS=";" read -ra buffer <<< "${PROJECTS[$1]}"
 		echo -e "${buffer[0]}\n"
 
 		for i in "${!containers[@]}"
@@ -81,7 +94,12 @@ do
 
 	if [[ ! -z "$PROJECT" && "$PROJECT" != "0" ]]
 	then
-		StartProject $(($PROJECT-1))
+		if [[ "$PROJECT" == *"+b"* ]]
+		then
+			BuildProject $(($PROJECT-1))
+		else
+			StartProject $(($PROJECT-1))
+		fi
 	fi
 done
 

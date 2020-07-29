@@ -4,6 +4,7 @@ name="Magento 2 - Terminal"
 declare -A size
 declare -A magento
 
+# Empty array for full allow
 declare -a allowed=(
 	"app"
 	"cache"
@@ -41,7 +42,7 @@ do
 	else
 		currentType=${line:1}
 		# Skip exclude
-		if [[ ! " ${allowed[@]} " =~ " ${currentType} " ]]; then
+		if [[ ! -z "$allowed" && ! " ${allowed[@]} " =~ " ${currentType} " ]]; then
 			currentType=""
 			continue
 		fi

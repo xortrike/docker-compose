@@ -4,38 +4,21 @@ function CreateDirectory
 {
 	local dir=$1
 	local directory=(
-		[0]="docker"
-		[1]="logs"
-		[2]="logs/nginx"
-		[3]="logs/mysql"
-		[4]="mysql"
-		[5]="mysql/data"
-		[6]="mysql/dump"
-		[7]="www"
+		"docker"
+		"logs/nginx"
+		"logs/mysql"
+		"mysql/data"
+		"mysql/dump"
+		"www"
 	)
-	local permission=(
-		[0]=""
-		[1]="docker"
-		[2]="docker"
-		[3]="docker"
-		[4]="docker"
-		[5]="docker"
-		[6]="docker"
-		[7]="www-data"
-	)
-	for i in "${!directory[@]}"
+	for dirname in "${directory[@]}"
 	do
-		if [ -d "${dir}/${directory[$i]}" ]
+		if [ -d "${dir}/${dirname}" ]
 		then
-			echo "Directory skip: ${directory[$i]}"
+			echo "Directory skip: ${dirname}"
 		else
-			echo "Create directory: ${directory[$i]}"
-			mkdir -p "${dir}/${directory[$i]}"
-			if [[ ! -z ${permission[$i]} ]]
-			then
-				sudo chmod -R 775 "${dir}/${directory[$i]}"
-				sudo chown -R $USER:${permission[$i]} "${dir}/${directory[$i]}"
-			fi
+			echo "Creating directory: ${dirname}"
+			mkdir -p "${dir}/${dirname}"
 		fi
 	done
 }
@@ -93,23 +76,39 @@ buffer=""
 declare -A config
 config["project_name"]=${PWD##*/}
 config["host_name"]="example.local"
+config["user_name"]=$USER
+config["user_id"]=$UID
 
 # Project Name
-read -p "Enter Project name [${config["project_name"]}]:" buffer
+read -p "Enter project name [${config["project_name"]}]: " buffer
 if [ ! -z $buffer ]; then
 	config["project_name"]=$buffer
 fi
 
 # Site Address
-read -p "Enter Site Address [${config["host_name"]}]:" buffer
+read -p "Enter local site address [${config["host_name"]}]: " buffer
 if [ ! -z $buffer ]; then
 	config["host_name"]=$buffer
 fi
 
+# User Name
+read -p "Enter local user name [${config["user_name"]}]: " buffer
+if [ ! -z $buffer ]; then
+	config["user_name"]=$buffer
+fi
+
+# User ID
+read -p "Enter local user ID [${config["user_id"]}]: " buffer
+if [ ! -z $buffer ]; then
+	config["user_id"]=$buffer
+fi
+
 # Before start install
-echo "Everything is ready for installation."
+echo -e "\nEverything is ready for installation."
 echo " - Project Name: ${config["project_name"]}"
 echo " - Site Address: ${config["host_name"]}"
+echo " - User Name:    ${config["user_name"]}"
+echo " - User ID:      ${config["user_id"]}"
 read -p "Start to install? [y/n]: " buffer
 if [ -z $buffer ] || [ $buffer != "y" ]; then
 	exit
@@ -122,7 +121,7 @@ echo -e "\nInstalling..."
 CreateDirectory $path
 
 # Step 2 - Extract Archive
-if [ ! -f "${path}/${name}" ]; then
+if [[ ! -f "${path}/${name}" ]]; then
 	echo "Error! Archive ${name} not found."
 	exit
 fi
@@ -143,6 +142,14 @@ sed -i "s/${search}/${replace}/g" "${path}/docker/.env"
 
 search="COMPOSE_PROJECT_NAME=example"
 replace="COMPOSE_PROJECT_NAME=${config["project_name"]}"
+sed -i "s/${search}/${replace}/g" "${path}/docker/.env"
+
+search="WEB_USER_NAME=username"
+replace="WEB_USER_NAME=${config["user_name"]}"
+sed -i "s/${search}/${replace}/g" "${path}/docker/.env"
+
+search="WEB_USER_ID=userid"
+replace="WEB_USER_ID=${config["user_id"]}"
 sed -i "s/${search}/${replace}/g" "${path}/docker/.env"
 
 # Finish

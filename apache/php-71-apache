@@ -1,5 +1,8 @@
 FROM php:7.1-apache
 
+ARG WEB_NAME
+ARG WEB_ID
+
 # Configure time zone
 RUN ln -snf /usr/share/zoneinfo/$TIME_ZONA /etc/localtime && echo $TIME_ZONA > /etc/timezone
 
@@ -76,7 +79,13 @@ ADD ./mhsendmail_linux_amd64 /usr/local/bin/
 RUN mv /usr/local/bin/mhsendmail_linux_amd64 /usr/local/bin/mhsendmail
 RUN chmod +x /usr/local/bin/mhsendmail
 
-##---------- END ----------##
+##---------- USER ----------##
+
+# Add local user and group to conteiner
+RUN groupadd -g ${WEB_ID} ${WEB_NAME} && \
+    useradd -u ${WEB_ID} -g ${WEB_ID} -s /usr/sbin/nologin -d /var/www/html ${WEB_NAME}
+
+##---------- CLEAN ----------##
 
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

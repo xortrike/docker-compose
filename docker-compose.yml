@@ -7,9 +7,14 @@ services:
     build:
       context: ${CONFIG_DIR_APACHE}
       dockerfile: php-72-apache
+      args:
+        - WEB_NAME=${WEB_USER_NAME}
+        - WEB_ID=${WEB_USER_ID}
     container_name: ${COMPOSE_PROJECT_NAME}_apache
     environment:
-      PHP_IDE_CONFIG: "serverName=${HOST_NAME}"
+      - PHP_IDE_CONFIG="serverName=${HOST_NAME}"
+      - APACHE_RUN_USER=${WEB_USER_NAME}
+      - APACHE_RUN_GROUP=${WEB_USER_NAME}
     expose:
       - 9000
     depends_on:
@@ -40,6 +45,11 @@ services:
       context: ${CONFIG_DIR_MARIADB}
       dockerfile: Dockerfile
     container_name: ${COMPOSE_PROJECT_NAME}_mariadb
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_DATABASE=main_db
+      # - MYSQL_USER=admin
+      # - MYSQL_PASSWORD=12345
     volumes:
       - ${LOCAL_DIR_DB}/data:/var/lib/mysql
       - ${LOCAL_DIR_DB}/dump:/dump
@@ -58,4 +68,3 @@ services:
     ports:
       - 1025:1025
       - 8025:8025
-    hostname: ${HOST_NAME}

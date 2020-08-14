@@ -10,5 +10,5 @@ fi
 tar -cvjf "${path}/${name}" \
     --directory="${path}/" ".env" \
     --directory="${path}/" "docker-compose.yml" \
-    --directory="${path}/" "apache/" \
-    --directory="${path}/" "mariadb/"
+    --directory="${path}/" "mariadb/" \
+    --directory="${path}/" "apache/"

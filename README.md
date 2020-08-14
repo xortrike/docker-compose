@@ -52,3 +52,17 @@ GRANT ALL PRIVILEGES ON `name_db`.* TO 'admin'@'%';
 FLUSH PRIVILEGES;
 ```
 
+## User & Group
+Check user existence
+```
+grep username /etc/passwd
+```
+Check group existence
+```
+grep groupname /etc/group
+```
+Changing user and group for PHP in file "/usr/local/etc/php-fpm.d/www.conf".
+```
+: ${APACHE_RUN_USER:=www-data}
+: ${APACHE_RUN_GROUP:=www-data}
+```

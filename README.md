@@ -52,9 +52,9 @@ GRANT ALL PRIVILEGES ON `name_db`.* TO 'admin'@'%';
 FLUSH PRIVILEGES;
 ```
 Import Timezone Labels
-```
-mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql
 ```sh
+mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql
+```
 
 ## User & Group
 Check user existence

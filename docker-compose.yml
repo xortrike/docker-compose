@@ -7,6 +7,8 @@ services:
     build:
       context: ${CONFIG_DIR_APACHE}
       dockerfile: php-72-apache
+      args:
+        - TIME_ZONA=${TIME_ZONA}
     container_name: ${COMPOSE_PROJECT_NAME}_apache
     environment:
       - PHP_IDE_CONFIG="serverName=${HOST_NAME}"

@@ -1,5 +1,7 @@
 FROM php:7.1-fpm
 
+ARG TIME_ZONA
+
 # Configure time zone
 RUN ln -snf /usr/share/zoneinfo/$TIME_ZONA /etc/localtime && echo $TIME_ZONA > /etc/timezone
 

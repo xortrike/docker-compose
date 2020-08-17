@@ -2,6 +2,7 @@ FROM php:7.1-apache
 
 ARG WEB_NAME
 ARG WEB_ID
+ARG TIME_ZONA
 
 # Configure time zone
 RUN ln -snf /usr/share/zoneinfo/$TIME_ZONA /etc/localtime && echo $TIME_ZONA > /etc/timezone

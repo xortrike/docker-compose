@@ -1,15 +1,13 @@
 FROM mariadb:latest
 
-ENV MYSQL_ROOT_PASSWORD="1234"
-ENV MYSQL_DATABASE=db_main
-# ENV MYSQL_USER=admin
-# ENV MYSQL_PASSWORD=12345
+ARG TIME_ZONA
 
-# Update and upgrade system
-RUN apt-get update && apt-get upgrade -y
+# Configure time zone
+RUN ln -snf /usr/share/zoneinfo/$TIME_ZONA /etc/localtime && echo $TIME_ZONA > /etc/timezone
 
-# Install
-RUN apt-get install -y sudo nano
+# Update and install system programs
+RUN apt-get update && \
+    apt-get install -y sudo nano
 
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

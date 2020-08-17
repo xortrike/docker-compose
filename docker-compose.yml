@@ -21,6 +21,7 @@ services:
       - mariadb
       - php
     working_dir: ${WORKING_DIR}
+    hostname: localhost
 
   # MariaDB
   mariadb:
@@ -75,3 +76,4 @@ services:
     ports:
       - 1025:1025
       - 8025:8025
+    hostname: localhost

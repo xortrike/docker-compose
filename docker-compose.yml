@@ -27,6 +27,8 @@ services:
     build:
       context: ${CONFIG_DIR_MARIADB}
       dockerfile: Dockerfile
+      args:
+        - TIME_ZONA=${TIME_ZONA}
     container_name: ${COMPOSE_PROJECT_NAME}_mariadb
     environment:
       - MYSQL_ROOT_PASSWORD=1234
@@ -41,6 +43,7 @@ services:
     ports:
       - 3306:3306
     working_dir: /dump
+    hostname: localhost
 
   # PHP
   php:
@@ -50,6 +53,7 @@ services:
       args:
         - WEB_NAME=${WEB_USER_NAME}
         - WEB_ID=${WEB_USER_ID}
+        - TIME_ZONA=${TIME_ZONA}
     container_name: ${COMPOSE_PROJECT_NAME}_php
     environment:
       - PHP_IDE_CONFIG="serverName=${HOST_NAME}"

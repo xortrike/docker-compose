@@ -114,4 +114,5 @@ do
 	fi
 done
 
-echo "Docker projects closed."
+clear
+echo -e "\e[32mDocker projects closed.\e[0m"

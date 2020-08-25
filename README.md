@@ -38,7 +38,8 @@ Reconfiguration MySQL server.
   - Remove test database and access to it? [Y/n]      Y
   - Reload privilege tables now? [Y/n]                Y
 ```sh
-SELECT host, user, password FROM mysql.user;
+SELECT `host`, `user`, `password` FROM `mysql`.`user`;
+UPDATE `mysql`.`user` SET `host` = "%" WHERE `user` = "root" AND `host` = "127.0.0.1";
 ```
 | Host      | User  | Password                                  |
 |-----------|-------|-------------------------------------------|

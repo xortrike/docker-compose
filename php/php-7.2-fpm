@@ -67,7 +67,6 @@ RUN pecl install xdebug-2.9.0 && \
 # RUN chmod 600 /etc/msmtp.rc
 
 # Connect to MailHog SMTP server
-RUN echo $PWD
 ADD ./mhsendmail_linux_amd64 /usr/local/bin/
 RUN mv /usr/local/bin/mhsendmail_linux_amd64 /usr/local/bin/mhsendmail
 RUN chmod +x /usr/local/bin/mhsendmail

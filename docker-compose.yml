@@ -52,8 +52,6 @@ services:
       context: ${CONFIG_DIR_PHP}
       dockerfile: php-7.2-fpm
       args:
-        - WEB_NAME=${WEB_USER_NAME}
-        - WEB_ID=${WEB_USER_ID}
         - TIME_ZONA=${TIME_ZONA}
     container_name: ${COMPOSE_PROJECT_NAME}_php
     environment:

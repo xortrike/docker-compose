@@ -4,6 +4,12 @@ declare -a PROJECTS=(
 	"Magento 2;/var/www/projects/magento/docker"
 )
 
+# Current project
+if [[ -f "docker-compose.yml" ]]
+then
+	PROJECTS=("Current Project;$PWD")
+fi
+
 function RenderProjects
 {
 	clear
@@ -53,12 +59,14 @@ function StopProject
 
 function RenderContainers
 {
-	local containers=($(docker container ls --format "{{.Names}}"))
-	local count=$(expr ${#containers[@]} + 1)
+	local containers=""
+	local count=""
 	local container=""
 
 	while [[ $container != "0" ]]
 	do
+		containers=($(docker container ls --format "{{.Names}}"))
+		count=$(expr ${#containers[@]} + 1)
 		clear
 		local CLREOL=$'\x1B[K'
 		echo -e "\e[48;5;4m            \e[1m\e[97mDocker - Containers${CLREOL}\e[0m\e[49m"
@@ -94,17 +102,31 @@ function DownProject
 	fi
 }
 
+function HelpInformation
+{
+	clear
+	local CLREOL=$'\x1B[K'
+	echo -e "\e[48;5;4m            \e[1m\e[97mAdditionally Params${CLREOL}\e[0m\e[49m\n"
+	echo " +b - Build images"
+	echo " +d - Stop (down) projects"
+	echo ""
+	read -p "Press [Enter] key to continue..."
+	echo ""
+}
+
 # Select Project Index
 PROJECT=""
 
 while [[ $PROJECT != "0" ]]
 do
 	RenderProjects
-	read -p "Menu Number: " PROJECT
+	read -p "Enter Number: " PROJECT
 
 	if [[ ! -z "$PROJECT" && "$PROJECT" != "0" ]]
 	then
-		if [[ "$PROJECT" == *"+b"* ]]; then
+		if [[ "$PROJECT" == *"--help"* ]]; then
+			HelpInformation
+		elif [[ "$PROJECT" == *"+b"* ]]; then
 			BuildProject $(($PROJECT-1))
 		elif [[ "$PROJECT" == *"+d"* ]]; then
 			DownProject $(($PROJECT-1))

@@ -2,50 +2,12 @@
 
 declare -A SIZE_CLI=(
 	# [app]=3
-	# [cache]=5
-	# [catalog]=2
-	# [cron]=3
-	# [deploy]=2
-	# [indexer]=3
-	# [module]=4
-	# [setup]=3
 )
 
 declare -A MAGENTO_CLI=(
-	# app
 	# [app,1]="app:config:dump;Create dump of application"
 	# [app,2]="app:config:import;Import data from shared configuration files to appropriate data storage"
 	# [app,3]="app:config:status;Checks if config propagation requires update"
-	# cache
-	# [cache,1]="cache:clean;Cleans cache type(s)"
-	# [cache,2]="cache:disable;Disables cache type(s)"
-	# [cache,3]="cache:enable;Enables cache type(s)"
-	# [cache,4]="cache:flush;Flushes cache storage used by cache type(s)"
-	# [cache,5]="cache:status;Checks cache status"
-    # catalog
-	# [catalog,1]="catalog:images:resize;Creates resized product images"
-	# [catalog,2]="catalog:product:attributes:cleanup;Removes unused product attributes."
-	# cron
-	# [cron,1]="cron:install;Generates and installs crontab for current user"
-	# [cron,2]="cron:remove;Removes tasks from crontab"
-	# [cron,3]="cron:run;Runs jobs by schedule"
-	# deploy
-	# [deploy,1]="deploy:mode:set;Set application mode."
-	# [deploy,2]="deploy:mode:show;Displays current application mode."
-	# indexer
-	# [indexer,1]="indexer:info;Shows allowed Indexers"
-	# [indexer,2]="indexer:reindex;Reindexes Data"
-	# [indexer,3]="indexer:reset;Resets indexer status to invalid"
-	# [indexer,4]="indexer:status;Shows status of Indexer"
-	# module
-	# [module,1]="module:disable"
-	# [module,2]="module:enable"
-	# [module,3]="module:status"
-	# [module,4]="module:uninstall"
-	# setup
-	# [setup,1]="setup:di:compile"
-	# [setup,2]="setup:static-content:deploy"
-	# [setup,3]="setup:upgrade"
 )
 
 # Empty array for full allow
@@ -118,8 +80,7 @@ function RenderMenu
 	clear
     local index=1
 	local CLREOL=$'\x1B[K'
-	echo -e "\e[48;5;202m            \e[1m\e[97m${DEFAULT_TITLE} - $PWD${CLREOL}\e[0m\e[49m"
-	echo ""
+	echo -e "\e[48;5;202m            \e[1m\e[97m${DEFAULT_TITLE} - $PWD${CLREOL}\e[0m\e[49m\n"
     for key in ${!SIZE_CLI[@]}
     do
         printf "%3d - %s\n" $index $key
@@ -151,14 +112,47 @@ function RenderSubMenu
     done
 }
 
+function RunCommandLine
+{
+	local args=$@
+
+	# Save last command
+	if [[ $args != "l" ]]; then
+		LAST_COMMANDS="$args"
+	fi
+
+	IFS=";" read -r -a multiple <<< "$args"
+	if [[ ${#multiple[@]} > 1 ]]
+	then
+		for codes in "${multiple[@]}"
+		do
+			MagentoCommandLine "$codes"
+			CustomCommandLine "$codes"
+		done
+	else
+		MagentoCommandLine "$args"
+		CustomCommandLine "$args"
+	fi
+
+    # Skip pause for open sub category
+    if [[ ! -z "$work" ]]
+    then
+        pause
+    fi
+}
+
 function CustomCommandLine
 {
-    if [[ $1 == "p" ]]
-    then
-        echo "Set permissions global..."
+	if [[ $1 == "--help" ]]; then
+		HelpInformation
+    elif [[ $1 == "p" ]]; then
+        echo "Set permission..."
         chmod -R 775 .
-        chown -R 1001:www-data .
+		echo "Set group..."
+        chown -R www-data:1001 .
         work="1"
+	elif [[ $1 == "l" ]]; then
+		RunCommandLine "$LAST_COMMANDS"
     fi
 }
 
@@ -211,6 +205,19 @@ function MagentoCommandLine
 	fi
 }
 
+function HelpInformation
+{
+	clear
+	local CLREOL=$'\x1B[K'
+	echo -e "\e[48;5;202m            \e[1m\e[97mAdditionally Params${CLREOL}\e[0m\e[49m\n"
+	echo "  + - Add plus for set params."
+	echo "  ; - Use semicolon for run multi commands."
+	echo "  p - Set project permissions."
+	echo "  l - Run the last commands."
+
+	pause
+}
+
 # Reading commands list if default commands list is empty
 if [[ -z ${SIZE_CLI[@]} && -z ${MAGENTO_CLI[@]} ]]
 then
@@ -220,31 +227,17 @@ fi
 # Global variables
 menu=""
 work=""
+LAST_COMMANDS=""
 
 while [[ $menu != "0" ]]
 do
     work=""
 	RenderMenu $menu
-	read -p "Enter menu number: " menu
+	read -p "Enter Number: " menu
 
 	if [[ ! -z "$menu" && "$menu" != "0" ]]
 	then
-        IFS=";" read -r -a multiple <<< "$menu"
-        if [[ ${#multiple[@]} > 1 ]]
-        then
-            for codes in "${multiple[@]}"
-            do
-                MagentoCommandLine "$codes"
-                CustomCommandLine "$codes"
-            done
-        else
-            MagentoCommandLine "$menu"
-            CustomCommandLine "$menu"
-        fi
-        if [[ ! -z "$work" ]]
-        then
-            pause
-        fi
+		RunCommandLine "$menu"
 	fi
 done
 

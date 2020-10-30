@@ -78,18 +78,18 @@ function pause
 function RenderMenu
 {
 	clear
-    local index=1
+	local index=1
 	local CLREOL=$'\x1B[K'
 	echo -e "\e[48;5;202m            \e[1m\e[97m${DEFAULT_TITLE} - $PWD${CLREOL}\e[0m\e[49m\n"
-    for key in ${!SIZE_CLI[@]}
-    do
-        printf "%3d - %s\n" $index $key
-        if [[ $1 == $index ]]
+	for key in ${!SIZE_CLI[@]}
+	do
+		printf "%3d - %s\n" $index $key
+		if [[ $1 == $index ]]
 		then
 			RenderSubMenu $key
 		fi
-        ((index+=1))
-    done
+		((index+=1))
+	done
 	echo ""
 }
 
@@ -100,16 +100,16 @@ function RenderSubMenu
 		n=2
 	fi
 
-    for (( i=1; i<=${SIZE_CLI[$1]}; i++ ))
-    do
-        IFS=";" read -r -a data <<< "${MAGENTO_CLI[$1,$i]}"
-        if [[ -z ${data[1]} ]]
+	for (( i=1; i<=${SIZE_CLI[$1]}; i++ ))
+	do
+		IFS=";" read -r -a data <<< "${MAGENTO_CLI[$1,$i]}"
+		if [[ -z ${data[1]} ]]
 		then
 			printf "%8d.%${n}d - %s\n" $index $i ${data[0]}
 		else
 			printf "%8d.%${n}d - %-44s%s\n" $index $i ${data[0]} "${data[1]}"
 		fi
-    done
+	done
 }
 
 function RunCommandLine
@@ -134,26 +134,26 @@ function RunCommandLine
 		CustomCommandLine "$args"
 	fi
 
-    # Skip pause for open sub category
-    if [[ ! -z "$work" ]]
-    then
-        pause
-    fi
+	# Skip pause for open sub category
+	if [[ ! -z "$work" ]]
+	then
+		pause
+	fi
 }
 
 function CustomCommandLine
 {
 	if [[ $1 == "--help" ]]; then
 		HelpInformation
-    elif [[ $1 == "p" ]]; then
-        echo "Set permission..."
-        chmod -R 775 .
+	elif [[ $1 == "p" ]]; then
+		echo "Set permission..."
+		chmod -R 775 .
 		echo "Set group..."
-        chown -R www-data:1001 .
-        work="1"
+		chown -R www-data:1001 .
+		work="1"
 	elif [[ $1 == "l" ]]; then
 		RunCommandLine "$LAST_COMMANDS"
-    fi
+	fi
 }
 
 function MagentoCommandLine
@@ -168,25 +168,25 @@ function MagentoCommandLine
 		params=${args#*+}
 	fi
 
-    # Code
+	# Code
 	IFS="." read -r -a code <<< "$codes"
-    if [[ ${#code[@]} != 2 ]]
-    then
-        return 0
-    fi
-    type=${code[0]}
+	if [[ ${#code[@]} != 2 ]]
+	then
+		return 0
+	fi
+	type=${code[0]}
 	index=${code[1]}
 
-    # Type
-    local i=1
-    for key in ${!SIZE_CLI[@]}
-    do
-        if [[ $i == $type ]]
+	# Type
+	local i=1
+	for key in ${!SIZE_CLI[@]}
+	do
+		if [[ $i == $type ]]
 		then
 			type=$key
 		fi
-        ((i+=1))
-    done
+		((i+=1))
+	done
 
 	# Command line
 	if [[ -z ${MAGENTO_CLI[$type,$index]} ]]
@@ -195,13 +195,13 @@ function MagentoCommandLine
 	fi
 
 	# Get command
-    IFS=";" read -r -a buffer <<< "${MAGENTO_CLI[$type,$index]}"
+	IFS=";" read -r -a buffer <<< "${MAGENTO_CLI[$type,$index]}"
 	command=${buffer[0]}
 
 	echo -e "\e[93m => $codes [$command] [$params]\e[0m"
 	if [[ -f "$bin" ]]; then
 		php $bin $command $params
-        work="1"
+		work="1"
 	fi
 }
 
@@ -231,7 +231,7 @@ LAST_COMMANDS=""
 
 while [[ $menu != "0" ]]
 do
-    work=""
+	work=""
 	RenderMenu $menu
 	read -p "Enter Number: " menu
 

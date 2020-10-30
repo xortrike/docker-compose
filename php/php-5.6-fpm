@@ -9,7 +9,7 @@ RUN ln -snf /usr/share/zoneinfo/$TIME_ZONA /etc/localtime && echo $TIME_ZONA > /
 
 # Update and Install default packages
 RUN apt-get update && \
-    apt-get install -y sudo nano wget zlib1g-dev cron git
+    apt-get install -y sudo nano wget zlib1g-dev cron git procps
 
 # Zip
 RUN apt-get install -y libzip-dev unzip && \

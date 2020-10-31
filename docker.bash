@@ -94,13 +94,16 @@ function RenderContainers
 		elif [[ "$container" == *"+u"* ]]
 		then
 			IFS=" " read -ra userBuffer <<< "$container"
-			if [[ ! -z "${userBuffer[1]}" ]]; then
+			if [[ ! -z "${userBuffer[1]}" ]]
+			then
 				USER="${userBuffer[1]}"
 			else
 				USER="root"
 			fi
 			IFS="+" read -ra indexBuffer <<< "${userBuffer[0]}"
 			container=${indexBuffer[0]}
+		else
+			USER="root"
 		fi
 
 		# Open container

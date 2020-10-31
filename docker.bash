@@ -10,6 +10,13 @@ then
 	PROJECTS=("Current Project;$PWD")
 fi
 
+function pause
+{
+	echo ""
+	read -p "Press [Enter] key to continue..."
+	echo ""
+}
+
 function RenderProjects
 {
 	clear
@@ -81,11 +88,27 @@ function RenderContainers
 		echo ""
 		read -p "Menu Number: " container
 
+		if [[ "$container" == "--help" ]]
+		then
+			HelpInformation2
+		elif [[ "$container" == *"+u"* ]]
+		then
+			IFS=" " read -ra userBuffer <<< "$container"
+			if [[ ! -z "${userBuffer[1]}" ]]; then
+				USER="${userBuffer[1]}"
+			else
+				USER="root"
+			fi
+			IFS="+" read -ra indexBuffer <<< "${userBuffer[0]}"
+			container=${indexBuffer[0]}
+		fi
+
+		# Open container
 		if [[ $container > 0 && $container < $count ]]
 		then
 			clear
 			i=$(expr $container - 1)
-			docker exec -it ${containers[$i]} bash
+			docker exec -it --user $USER ${containers[$i]} /bin/bash
 		fi
 	done
 
@@ -107,15 +130,23 @@ function HelpInformation
 	clear
 	local CLREOL=$'\x1B[K'
 	echo -e "\e[48;5;4m            \e[1m\e[97mAdditionally Params${CLREOL}\e[0m\e[49m\n"
-	echo " +b - Build images"
-	echo " +d - Stop (down) projects"
-	echo ""
-	read -p "Press [Enter] key to continue..."
-	echo ""
+	echo " +b - Build images."
+	echo " +d - Stop (down) projects."
+	pause
+}
+
+function HelpInformation2
+{
+	clear
+	local CLREOL=$'\x1B[K'
+	echo -e "\e[48;5;4m            \e[1m\e[97mAdditionally Params${CLREOL}\e[0m\e[49m\n"
+	echo " +u www-data - Open conteiner as www-data user."
+	pause
 }
 
 # Select Project Index
 PROJECT=""
+USER="root"
 
 while [[ $PROJECT != "0" ]]
 do
@@ -124,7 +155,7 @@ do
 
 	if [[ ! -z "$PROJECT" && "$PROJECT" != "0" ]]
 	then
-		if [[ "$PROJECT" == *"--help"* ]]; then
+		if [[ "$PROJECT" == "--help" ]]; then
 			HelpInformation
 		elif [[ "$PROJECT" == *"+b"* ]]; then
 			BuildProject $(($PROJECT-1))

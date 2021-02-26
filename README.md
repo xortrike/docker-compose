@@ -8,7 +8,9 @@ This will help you use docker containers.
 Run the magento.bash file via /bin/bash.
 This will help you use commands Magento 2 CLI terminal.
 
-
+## Docker 2
+Run the docker.pyc file via python3.
+It's a good helper for work with docker projects, containers, Magento terminal, and MySql.
 
 ## Chrome
 Configuration Google Chrome for SSL certificate.

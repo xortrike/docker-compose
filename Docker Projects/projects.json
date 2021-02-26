@@ -1,0 +1,10 @@
+[
+    {
+        "name": "Magento 2",
+        "dockerPath": "/home/../Magento2/docker",
+        "phpContainerName": "magento2_php-fpm_1",
+        "sqlContainerName": "magento2_mariadb_1",
+        "sqlUser": "root",
+        "sqlPassword": "1234"
+    }
+]

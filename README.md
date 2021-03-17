@@ -4,9 +4,13 @@
 Run the docker.bash file via /bin/bash.
 This will help you use docker containers.
 
-## Magento.bash
+## Magento
 Run the magento.bash file via /bin/bash.
 This will help you use commands Magento 2 CLI terminal.
+
+## Docker + Magento + MySQL
+Run the docker.pyc file via python3.
+This will help you use docker containers. magento CLI and MySql.
 
 ## Docker 2
 Run the docker.pyc file via python3.

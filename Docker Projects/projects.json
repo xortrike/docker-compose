@@ -1,10 +1,16 @@
 [
     {
         "name": "Magento 2",
-        "dockerPath": "/home/../Magento2/docker",
-        "phpContainerName": "magento2_php-fpm_1",
-        "sqlContainerName": "magento2_mariadb_1",
-        "sqlUser": "root",
-        "sqlPassword": "1234"
+        "dockerPath": "/home/user/magento2/docker",
+        "sql": {
+            "container": "magento2_mariadb_1",
+            "user": "root",
+            "password": "1234",
+            "dumpDir": "/home/user/magento2/dumps"
+        },
+        "mage": {
+            "container": "magento2_php-fpm_1",
+            "groups": ["cache", "indexer", "setup"]
+        }
     }
 ]

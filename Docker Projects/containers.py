@@ -6,10 +6,12 @@ from mysql      import MySqlTerminal
 class DockerContainers:
     # Constructor
     def __init__(self, project):
+        self.isPause = False
         self.mainLoop = True
         self.project = project
         self.containers = []
         while self.mainLoop:
+            self.isPause = False
             self.showContainers()
             try:
                 command = input("Enter Command: ")
@@ -17,6 +19,12 @@ class DockerContainers:
             except KeyboardInterrupt:
                 self.mainLoop = False
                 print("")
+            except Exception as errorMessage:
+                os.system("clear")
+                print(errorMessage)
+                self.isPause = True
+            if self.isPause:
+                input("\nPress [Enter] key to continue...")
 
     def getContainers(self):
         stream = os.popen('docker container ls --format "{{.Names}}"')
@@ -58,12 +66,19 @@ class DockerContainers:
         elif cmds[0] in ["h", "help"]:
             self.showDocumentation()
         elif cmds[0] == "mage":
-            magento = MagentoTerminal(self.project["phpContainerName"])
-        elif cmds[0] == "sql":
-            if "sqlUser" in self.project and "sqlPassword" in self.project:
-                mysql = MySqlTerminal(self.project["sqlContainerName"], self.project["sqlUser"], self.project["sqlPassword"])
+            if "mage" in self.project:
+                magento = MagentoTerminal(self.project["mage"], self.containers)
             else:
-                mysql = MySqlTerminal(self.project["sqlContainerName"])
+                os.system("clear")
+                print("\033[1;31mIn your configuration file don't have \"mage\" configuration.\033[0m")
+                self.isPause = True
+        elif cmds[0] == "sql":
+            if "sql" in self.project:
+                mysql = MySqlTerminal(self.project["sql"], self.containers)
+            else:
+                os.system("clear")
+                print("\033[1;31mIn your configuration file don't have \"sql\" configuration.\033[0m")
+                self.isPause = True
         elif cmds[0].isnumeric():
             # Base
             cmds[0] = int(cmds[0]) - 1

@@ -5,15 +5,15 @@ services:
   # Nginx
   nginx:
     build:
-      context: ${CONFIG_DIR_NGINX}
+      context: ${NGINX_CONFIG_DIR}
       dockerfile: Dockerfile
     container_name: ${COMPOSE_PROJECT_NAME}_nginx
     volumes:
-      - ${LOCAL_DIR_WEB}:${WORKING_DIR}
-      - ${LOCAL_DIR_LOG}/nginx:/var/log/nginx
-      - ${CONFIG_DIR_NGINX}/cert:/etc/nginx/cert
-      # - ${CONFIG_DIR_NGINX}/nginx.conf:/etc/nginx/nginx.conf
-      - ${CONFIG_DIR_NGINX}/magento.conf:/etc/nginx/conf.d/default.conf
+      - ${NGINX_LINK_DIR}:${WORKING_DIR}
+      - ${NGINX_LOG_DIR}:/var/log/nginx
+      - ${NGINX_CONFIG_DIR}/cert:/etc/nginx/cert
+      # - ${NGINX_CONFIG_DIR}/nginx.conf:/etc/nginx/nginx.conf
+      - ${NGINX_CONFIG_DIR}/magento.conf:/etc/nginx/conf.d/default.conf
     ports:
       - 80:80
       - 443:443
@@ -26,21 +26,21 @@ services:
   # MariaDB
   mariadb:
     build:
-      context: ${CONFIG_DIR_MARIADB}
+      context: ${MARIADB_CONFIG_DIR}
       dockerfile: Dockerfile
       args:
         - TIME_ZONA=${TIME_ZONA}
     container_name: ${COMPOSE_PROJECT_NAME}_mariadb
     environment:
       - MYSQL_ROOT_PASSWORD=1234
-      - MYSQL_DATABASE=main_db
+      - MYSQL_DATABASE=db_main
       - MYSQL_USER=admin
       - MYSQL_PASSWORD=12345
     volumes:
-      - ${LOCAL_DIR_DB}/data:/var/lib/mysql
-      - ${LOCAL_DIR_DB}/dump:/dump
-      - ${LOCAL_DIR_LOG}/mysql:/var/log/mysql
-      - ${CONFIG_DIR_MARIADB}/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+      - ${MARIADB_DATA_DIR}:/var/lib/mysql
+      - ${MARIADB_LINK_DIR}:/dump
+      - ${MARIADB_LOG_DIR}:/var/log/mysql
+      - ${MARIADB_CONFIG_DIR}/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
     ports:
       - 3306:3306
     working_dir: /dump
@@ -49,8 +49,8 @@ services:
   # PHP
   php:
     build:
-      context: ${CONFIG_DIR_PHP}
-      dockerfile: php-7.2-fpm
+      context: ${PHP_CONFIG_DIR}
+      dockerfile: php-7.4-fpm
       args:
         - WEB_NAME=${WEB_USER_NAME}
         - WEB_ID=${WEB_USER_ID}
@@ -61,9 +61,9 @@ services:
     expose:
       - 9000
     volumes:
-      - ${LOCAL_DIR_WEB}:${WORKING_DIR}
-      - ${CONFIG_DIR_PHP}/php.ini:/usr/local/etc/php/php.ini
-      - ${CONFIG_DIR_PHP}/auth.json:/root/.composer/auth.json
+      - ${PHP_LINK_DIR}:${WORKING_DIR}
+      - ${PHP_CONFIG_DIR}/php.ini:/usr/local/etc/php/php.ini
+      - ${PHP_CONFIG_DIR}/auth.json:/root/.composer/auth.json
     working_dir: ${WORKING_DIR}
     hostname: ${HOST_NAME}
 
@@ -77,3 +77,24 @@ services:
       - 1025:1025
       - 8025:8025
     hostname: localhost
+
+  # ElasticSearch
+  elasticsearch:
+    image: elasticsearch:7.11.1
+    container_name: ${COMPOSE_PROJECT_NAME}_elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    volumes:
+      - ${ELASTICSEARCH_LINK_DIR}:/usr/share/elasticsearch/data
+      - ${ELASTICSEARCH_LOG_DIR}:/usr/share/elasticsearch/logs
+    expose:
+      - 9200
+      - 9300
+    ports:
+      - 9200:9200
+      - 9300:9300
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1

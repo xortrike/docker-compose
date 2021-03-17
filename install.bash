@@ -6,9 +6,9 @@ function CreateDirectory
 	local directory=(
 		"docker"
 		"logs/nginx"
-		"logs/mysql"
-		"mysql/data"
-		"mysql/dump"
+		"logs/mariadb"
+		"data/mariadb"
+		"link/mariadb"
 		"www"
 	)
 	for dirname in "${directory[@]}"
@@ -25,7 +25,11 @@ function CreateDirectory
 
 function setCertificate
 {
-	cd ${path}"/docker/nginx/openssl"
+	if [ -f "${path}/docker/nginx/openssl" ]; then
+		echo "Directory ${path}/docker/nginx/openssl not create."
+		return 0
+	fi
+	cd "${path}/docker/nginx/openssl"
 
 	if [ -z "$1" ]; then
 		echo "Please supply a subdomain to create a certificate for";
@@ -65,7 +69,7 @@ function setCertificate
 		mkdir -p "../cert"
 	fi
 	mv $DOMAIN "../cert"
-	cd ${path}
+	cd "${path}"
 }
 
 path=$PWD
@@ -118,7 +122,7 @@ fi
 
 echo -e "\nInstalling..."
 # Step 1 - Create Directory
-CreateDirectory $path
+CreateDirectory "$path"
 
 # Step 2 - Extract Archive
 if [[ ! -f "${path}/${name}" ]]; then

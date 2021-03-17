@@ -93,3 +93,15 @@ Changing user and group for PHP in file "/usr/local/etc/php-fpm.d/www.conf".
 user = www-data
 group = www-data
 ```
+## ElasticSearch
+
+If you have problem with start ElasticSearch container, you need to change permissions.
+You can use easy method and set 777 permissions.
+Or you can use beautiful method. Open ElasticSearch container and run command
+```
+id -u elasticsearch
+```
+You have an ID user elasticsearch. Use this ID in next command instead 1000.
+```
+sudo chown -R 1000:1000 ./data/elasticsearch ./logs/elasticsearch
+```

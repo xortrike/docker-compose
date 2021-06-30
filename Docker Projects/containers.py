@@ -1,97 +1,109 @@
 import os
+import readline # input history
+import sys
 
-from magento    import MagentoTerminal
-from mysql      import MySqlTerminal
+from general  import General
+from commands import Commands
+from magento  import MagentoTerminal
+from tools    import ToolsTerminal
 
 class DockerContainers:
     # Constructor
     def __init__(self, project):
-        self.isPause = False
-        self.mainLoop = True
+        # Project details
         self.project = project
-        self.containers = []
-        while self.mainLoop:
-            self.isPause = False
-            self.showContainers()
-            try:
-                command = input("Enter Command: ")
-                self.runCommand(command)
-            except KeyboardInterrupt:
-                self.mainLoop = False
-                print("")
-            except Exception as errorMessage:
-                os.system("clear")
-                print(errorMessage)
-                self.isPause = True
-            if self.isPause:
-                input("\nPress [Enter] key to continue...")
+        # Main loop
+        self.mainLoop = True
 
+        try:
+            while self.mainLoop:
+                self.containers = self.getContainers()
+                self.showContainers()
+                inputCommands = input("Enter Command: ")
+                classCommands = Commands(inputCommands)
+                self.runCommands(classCommands)
+        except KeyboardInterrupt:
+            print("")
+        except Exception:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            General.errorMessage(exc_value)
+
+    # Return containers list
     def getContainers(self):
         stream = os.popen('docker container ls --format "{{.Names}}"')
         output = stream.read()
-        self.containers = list(filter(None, output.split("\n")))
-        return self.containers
+        containers = filter(None, output.split("\n"))
+        return list(containers)
 
-    # Documentations
+    # Show documentations
     def showDocumentation(self):
-        os.system("clear")
+        General.clear()
         self.printTitle("Extra Options")
         print("")
-        print("u - Open container as another user\n\t1+u=www-data")
-        print("mage - Run Magento terminal")
-        print("sql - Run SQL terminal")
+        print("    u - Open container as another user [1 -u=www-data]")
+        print(" mage - Run Magento terminal")
+        print("tools - Run Tools terminal")
         print("")
-        input("Press [Enter] key to continue...")
+        General.pause()
 
-    # Print Title
+    # Print title
     def printTitle(self, title):
         print("\033[48;5;4m            \033[1m\033[97m"+title+"\x1B[K\033[0m")
 
-    # Show Containers
+    # Show containers list
     def showContainers(self):
-        os.system("clear")
+        General.clear()
         self.printTitle("Docker - Containers")
+        i = 1
         print("")
-        i = 0
-        containers = self.getContainers()
-        while i < len(containers):
-            print("{0:3} - {1}".format(i+1, containers[i]))
+        for container in self.containers:
+            print("{0:3} - {1}".format(i, container))
             i += 1
         print("")
 
-    def runCommand(self, cmd):
-        cmds = cmd.split("+")
-        if cmds[0] in ["x", "exit", "0"]:
+    # Run container commands
+    def runCommands(self, commands):
+        General.clear()
+        result = True
+        try:
+            for command in commands:
+                result = self.runCommand(command)
+                if result == False:
+                    break
+        except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            General.warningMessage(exc_value)
+        if result == True:
+            General.pause()
+
+    # Run container command
+    def runCommand(self, command):
+        commandName = command.getCommand()
+        # Default user
+        paramUser = command.getParam("u").getValue()
+
+        # General commands
+        if commandName in ["x", "exit", "0"]:
             self.mainLoop = False
-        elif cmds[0] in ["h", "help"]:
+            return False
+        elif commandName in ["h", "help"]:
             self.showDocumentation()
-        elif cmds[0] == "mage":
-            if "mage" in self.project:
-                magento = MagentoTerminal(self.project["mage"], self.containers)
-            else:
-                os.system("clear")
-                print("\033[1;31mIn your configuration file don't have \"mage\" configuration.\033[0m")
-                self.isPause = True
-        elif cmds[0] == "sql":
-            if "sql" in self.project:
-                mysql = MySqlTerminal(self.project["sql"], self.containers)
-            else:
-                os.system("clear")
-                print("\033[1;31mIn your configuration file don't have \"sql\" configuration.\033[0m")
-                self.isPause = True
-        elif cmds[0].isnumeric():
-            # Base
-            cmds[0] = int(cmds[0]) - 1
-            if cmds[0] >= 0 and cmds[0] < len(self.containers):
-                if len(cmds) > 1:
-                    params = cmds[1].split("=")
-                    if params[0] == "u":
-                        # Open container as user...
-                        userName = params[1]
-                        containerName = self.containers[cmds[0]]
-                        os.system('docker exec -it --user {0} {1} /bin/bash'.format(userName, containerName))
-                else:
-                    # Open container
-                    os.system("clear")
-                    containerName = self.containers[cmds[0]]
-                    os.system('docker exec -it {0} /bin/bash'.format(containerName))
+            return False
+        elif commandName in ["m", "magento"]:
+            # MAGE
+            if not "magento" in self.project:
+                raise Exception("In your configuration file don't have \"magento\" configuration.")
+            MagentoTerminal(self.project["magento"], self.containers, paramUser)
+            return False
+        elif commandName in ["t", "tools"]:
+            # TOOLS
+            if not "tools" in self.project:
+                raise Exception("In your configuration file don't have \"tools\" configuration.")
+            ToolsTerminal(self.project["tools"], self.containers, paramUser)
+            return False
+        elif commandName.isnumeric():
+            userName = paramUser if len(paramUser) > 0 else "root"
+            containerName = self.containers[int(commandName)-1]
+            os.system('docker exec -it --user {0} {1} /bin/bash'.format(userName, containerName))
+
+        return False

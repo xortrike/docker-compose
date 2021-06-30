@@ -1,16 +1,36 @@
 [
     {
-        "name": "Magento 2",
-        "dockerPath": "/home/user/magento2/docker",
+        "name": "Magento 2.3.4",
+        "dockerPath": "/home/sergey/Projects/Magento 2.3.4/docker",
+        "magento": {
+            "container": "magento234_php-fpm_1",
+            "groups": ["cache", "indexer", "setup"]
+        },
+        "tools": {
+            "webContainer": "magento234_nginx_1",
+            "phpContainer": "magento234_php-fpm_1",
+            "mysqlContainer": "magento234_mariadb_1",
+            "mysqlUser": "root",
+            "mysqlPassword": "1234",
+            "mysqlDumpDir": "/home/sergey/Projects/Magento 2.3.4/myDumps"
+        }
+    },
+    {
+        "sss": "WhellPros"
+    },
+    {
+        "name": "WheelPros",
+        "dockerPath": "/home/sergey/Projects/WheelPros",
         "sql": {
-            "container": "magento2_mariadb_1",
-            "user": "root",
-            "password": "1234",
-            "dumpDir": "/home/user/magento2/dumps"
+            "container": "wheelpros_magento2_mysql_1",
+            "user": "magento2",
+            "password": "magento2",
+            "dumpDir": "/home/sergey/Projects/WhellPros/dump"
         },
         "mage": {
-            "container": "magento2_php-fpm_1",
-            "groups": ["cache", "indexer", "setup"]
+            "container": "wheelpros_magento2_php_1",
+            "user": "www-data",
+            "groups": ["tools", "cache", "indexer", "setup", "cron"]
         }
     }
 ]

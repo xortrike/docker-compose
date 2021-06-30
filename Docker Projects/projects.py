@@ -1,123 +1,163 @@
 import os
 import json
+import readline # input history
+import sys
 
+from general    import General
+from commands   import Commands
 from containers import DockerContainers
 
 class DockerProjects:
     # Constructor
     def __init__(self):
-        self.isPause = False
-        self.rootDir = os.path.dirname(os.path.abspath(__file__))
-        if os.path.isfile(self.rootDir):
-            self.rootDir = os.path.dirname(self.rootDir)
-        self.projectsFile = os.path.join(self.rootDir, "projects.json")
-        if os.path.exists(self.projectsFile) and os.path.isfile(self.projectsFile):
+        # Main loop
+        self.mainLoop = True
+        # Project ID
+        self.projectId = 0
+
+        try:
             self.projects = self.getProjects()
-            self.mainLoop = True
-            self.projectId = 0
             while self.mainLoop:
-                self.isPause = False
                 self.showProjects()
-                try:
-                    command = input("Enter Command: ")
-                    self.runCommand(command)
-                    if self.isPause:
-                        input("\nPress [Enter] key to continue...")
-                except KeyboardInterrupt:
-                    self.mainLoop = False
-                    print("")
-            os.system("clear")
-        else:
-            os.system("clear")
-            print("\033[1;31mYou need to create file \""+self.projectsFile+"\" with the projects.\033[0m")
-            input("\nPress [Enter] key to continue...")
+                inputCommands = input("Enter Command: ")
+                classCommands = Commands(inputCommands)
+                self.runCommands(classCommands)
+        except KeyboardInterrupt:
+            print("")
+        except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            General.errorMessage(exc_value)
 
-    # Read Projects List
+    # Read projects list
     def getProjects(self):
-        f = open(self.projectsFile)
-        projects = json.load(f)
-        f.close()
-        return projects
+        baseDir = self.getBaseDir()
+        projectsFile = os.path.join(baseDir, "projects.json")
+        if os.path.exists(projectsFile) and os.path.isfile(projectsFile):
+            strem = open(projectsFile)
+            projects = json.load(strem)
+            strem.close()
+            return projects
+        else:
+            raise Exception("The file with projects doesn't exist.")
 
-    # Print Title
+    # Returns the base directory of the program
+    def getBaseDir(self):
+        baseDir = os.path.dirname(os.path.abspath(__file__))
+        if os.path.isfile(baseDir):
+            baseDir = os.path.dirname(baseDir)
+        return baseDir
+
+    # Checking project by ID
+    def checkProject(self, id):
+        if id >= 0 and id < len(self.projects):
+            if "dockerPath" in self.projects[id]:
+                dockerComposeFile = os.path.join(self.projects[id]["dockerPath"], "docker-compose.yml")
+                if os.path.exists(dockerComposeFile):
+                    return True
+        return False
+
+    # Print title
     def printTitle(self, title):
-        print("\033[48;5;4m            \033[1m\033[97m"+title+"\x1B[K\033[0m")
+        print("\033[48;5;4m            \033[1m\033[97m{0}\x1B[K\033[0m".format(title))
 
-    # Show Documentations
+    # Show documentations
     def showDocumentation(self):
-        os.system("clear")
+        General.clear()
         self.printTitle("Extra Options")
         print("We can add extra options via plus.")
         print("")
-        print("s - Stop all containers\n    Example: 1+s")
-        print("d - Down all containers\n    Example: 1+d")
-        print("b - Build all containers\n    Example: 1+b")
+        print("s - Stop all containers [1 s]")
+        print("d - Down all containers [1 d]")
+        print("b - Build all containers [1 b]")
         print("")
-        self.isPause = True
+        General.pause()
 
-    # Show Projects
+    # Show projects
     def showProjects(self):
-        os.system("clear")
+        General.clear()
         self.printTitle("Docker - Projects")
-        i = 0
+        i = 1
         print("")
-        while i < len(self.projects):
-            if "name" in self.projects[i] and "dockerPath" in self.projects[i]:
-                pathDockerCompose = os.path.join(self.projects[i]["dockerPath"], "docker-compose.yml")
-                if os.path.exists(pathDockerCompose):
-                    print("{0:3} - {1}".format(i+1, self.projects[i]["name"]))
-                else:
-                    print("{0:3} - \033[1;31m{1}\033[0m".format(i+1, self.projects[i]["name"]))
+        for project in self.projects:
+            projectName = project["name"] if "name" in project else "???"
+            if self.checkProject(i-1):
+                print("{0:3} - {1}".format(i, projectName))
+            else:
+                print("{0:3} - \033[1;31m{1}\033[0m".format(i, projectName))
             i += 1
         print("")
 
-    # Run Command
-    def runCommand(self, cmd):
-        cmds = cmd.split("+")
-        if cmds[0] in ["x", "exit", "0"]:
-            self.mainLoop = False
-        elif cmds[0] in ["h", "help"]:
-            self.showDocumentation()
-        elif cmds[0].isnumeric():
-            cmds[0] = int(cmds[0]) - 1
-            if cmds[0] >= 0 and cmds[0] < len(self.projects):
-                self.projectId = cmds[0]
-                if len(cmds) > 1:
-                    # Params
-                    if cmds[1] == "s":
-                        self.stopProject()
-                    elif cmds[1] == "d":
-                        self.downProject()
-                    elif cmds[1] == "b":
-                        self.buildProject()
-                else:
-                    pathDockerCompose = os.path.join(self.projects[self.projectId]["dockerPath"], "docker-compose.yml")
-                    if os.path.exists(pathDockerCompose):
-                        # Start
-                        self.startProject()
-                        DContainers = DockerContainers(self.projects[self.projectId])
-                        self.stopProject()
-                    else:
-                        os.system("clear")
-                        print("\033[1;31mProject \"{0}\" don't have docker-compose.yml file.\033[0m".format(self.projects[self.projectId]["name"]))
-                        self.isPause = True
+    # Run commands
+    def runCommands(self, commands):
+        General.clear()
+        result = True
+        try:
+            for command in commands:
+                result = self.runCommand(command)
+                if result == False:
+                    break
+        except:
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            General.warningMessage(exc_value)
+        if result == True:
+            General.pause()
 
+    # Run command
+    def runCommand(self, command):
+        commandName = command.getCommand()
+        # General commands
+        if commandName in ["x", "exit", "0"]:
+            self.mainLoop = False
+            return False
+        elif commandName in ["h", "help"]:
+            self.showDocumentation()
+            return False
+        elif commandName.isnumeric():
+            # Set Project ID
+            self.projectId = int(commandName) - 1
+            if self.projectId < 0 or self.projectId >= len(self.projects):
+                self.projectId = 0
+                return False
+            if self.checkProject(self.projectId) != True:
+                projectName = self.projects[self.projectId]["name"] if "name" in self.projects[self.projectId] else "???"
+                raise Exception("Project \"{0}\" don't have docker-compose.yml file.".format(projectName))
+            # Apply command
+            firstParam = command.getParam()
+            if firstParam == "s":
+                self.stopProject()
+            elif firstParam == "d":
+                self.downProject()
+            elif firstParam == "b":
+                self.buildProject()
+            else:
+                self.startProject()
+                runDockerContainers = DockerContainers(self.projects[self.projectId])
+                self.stopProject()
+                return False
+            return True
+        return False
+
+    # Start project
     def startProject(self):
-        os.system("clear")
+        General.clear()
         cmd = 'docker-compose --project-directory "{0}" --file "{0}/docker-compose.yml" up -d'
         os.system(cmd.format(self.projects[self.projectId]["dockerPath"]))
 
+    # Stop project
     def stopProject(self):
-        os.system("clear")
+        General.clear()
         cmd = 'docker-compose --project-directory "{0}" --file "{0}/docker-compose.yml" stop'
         os.system(cmd.format(self.projects[self.projectId]["dockerPath"]))
 
+    # Down project
     def downProject(self):
-        os.system("clear")
+        General.clear()
         cmd = 'docker-compose --project-directory "{0}" --file "{0}/docker-compose.yml" down'
         os.system(cmd.format(self.projects[self.projectId]["dockerPath"]))
 
+    # Build project
     def buildProject(self):
-        os.system("clear")
+        General.clear()
         cmd = 'docker-compose --project-directory "{0}" --file "{0}/docker-compose.yml" build'
         os.system(cmd.format(self.projects[self.projectId]["dockerPath"]))
+        self.isPause = True

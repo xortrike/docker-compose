@@ -105,3 +105,40 @@ You have an ID user elasticsearch. Use this ID in next command instead 1000.
 ```
 sudo chown -R 1000:1000 ./data/elasticsearch ./logs/elasticsearch
 ```
+
+# Docker Projects
+
+Create "projects.json" file by example:
+```json
+[
+    {
+        "name": "Magento 2.3.4",
+        "dockerPath": "/full/path/to/docker/folder",
+        "magento": {
+            "container": "magento234_php-fpm_1",
+            "groups": ["cache", "indexer", "setup"]
+        },
+        "tools": {
+            "webContainer": "magento234_nginx_1",
+            "phpContainer": "magento234_php-fpm_1",
+            "mysqlContainer": "magento234_mariadb_1",
+            "mysqlUser": "root",
+            "mysqlPassword": "1234",
+            "mysqlDumpDir": "/full/path/to/dump/folder"
+        }
+    }
+]
+```
+**name** - Название проекта (рекомендовано)
+**dockerPath** - Полный путь каталога где находится docker-compose.yml файл
+
+**magento** - Конфигурация для работы модуля: magento (при использовании)
+**container** - Полное имя PHP контейнера (обязательно)
+**groups** - Группы команд которые будет видно, остальные будут скрыты (по желанию)
+
+**tools** - Конфигурация для работы модуля: tools (при использовании)
+**phpContainer** - Полное имя PHP контейнера (обязательно для XDebugger команд)
+**mysqlContainer** - Полное имя PHP контейнера (обязательно для MySQL команд)
+**mysqlUser** - Имя пользователя для доступа к MySQL (обязательно для MySQL команд)
+**mysqlPassword** - Пароль пользователя для доступа к MySQL (обязательно для MySQL команд)
+**mysqlDumpDir** - Полный путь для експорта/импорта базы данных

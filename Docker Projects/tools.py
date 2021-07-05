@@ -1,17 +1,22 @@
 import os
 import readline # input history
 import sys
+import requests
 
 from general  import General
 from commands import Commands
 
 class ToolsTerminal:
     # Constructor
-    def __init__(self, tools, containers):
+    def __init__(self, tools, containers, userName):
         self.config = tools
         self.containers = containers
         self.mainLoop = True
         self.openGroupByIndex = -1
+
+        # Set new user name
+        if len(userName):
+            self.config["user"] = userName
 
         self.commands = self.getCommands()
 
@@ -45,6 +50,13 @@ class ToolsTerminal:
                     {"name": "Enable", "method": "XDebuggerEnable"},
                     {"name": "Disable", "method": "XDebuggerDisable"},
                     {"name": "Status", "method": "XDebuggerStatus"}
+                ]
+            },
+            {
+                "group": "ElasticSearch",
+                "commands": [
+                    {"name": "Indexs", "method": "ElasticSearchIndexs"},
+                    {"name": "Delete", "method": "ElasticSearchDelete"}
                 ]
             }
         ]
@@ -261,3 +273,22 @@ class ToolsTerminal:
         print("XDebugger is enabled." if int(output) else "XDebugger is disabled.")
 
         return True
+
+    # https://www.kite.com/python/answers/how-to-use-curl-in-python
+    def ElasticSearch(self):
+        if "esContainer" not in self.config:
+            raise Exception("In your configuration don't have a ElasticSearch container name.")
+        if self.config["esContainer"] not in self.containers:
+            raise Exception("Container \"{0}\" not found.".format(self.config["esContainer"]))
+
+    # https://www.kite.com/python/docs/requests.get
+    def ElasticSearchIndexs(self, params):
+        self.ElasticSearch()
+        result = requests.get("http://localhost:9200/_cat/indices?v")
+        print(result.text)
+
+    # https://www.kite.com/python/docs/requests.delete
+    def ElasticSearchDelete(self, params):
+        self.ElasticSearch()
+        result = requests.delete("http://localhost:9200/_all")
+        print(result.text)

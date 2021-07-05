@@ -126,7 +126,7 @@ Create "projects.json" file by example:
             "mysqlUser": "root",
             "mysqlPassword": "1234",
             "mysqlDumpDir": "/home/user/Magento 2/dumps",
-            "esContainer"" "wheelpros_magento2_elasticsearch_1"
+            "esContainer": "wheelpros_magento2_elasticsearch_1"
         }
     }
 ]

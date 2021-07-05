@@ -7,7 +7,7 @@ from commands import Commands
 
 class ToolsTerminal:
     # Constructor
-    def __init__(self, tools, containers, userName):
+    def __init__(self, tools, containers):
         self.config = tools
         self.containers = containers
         self.mainLoop = True

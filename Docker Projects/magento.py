@@ -22,7 +22,8 @@ class MagentoTerminal:
         if self.config["container"] not in containers:
             raise Exception("Container \"{0}\" not running.".format(self.config["container"]))
         # Set new user name
-        self.config["user"] = userName if len(userName) > 0 else "root"
+        if len(userName):
+            self.config["user"] = userName
 
         self.commands = self.readCommandsList()
         if not self.commands or len(self.commands) == 0:

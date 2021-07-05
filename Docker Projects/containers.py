@@ -80,7 +80,7 @@ class DockerContainers:
     def runCommand(self, command):
         commandName = command.getCommand()
         # Default user
-        paramUser = command.getParam("u").getValue()
+        userName = command.getParam("u").getValue()
 
         # General commands
         if commandName in ["x", "exit", "0"]:
@@ -93,16 +93,16 @@ class DockerContainers:
             # MAGE
             if not "magento" in self.project:
                 raise Exception("In your configuration file don't have \"magento\" configuration.")
-            MagentoTerminal(self.project["magento"], self.containers, paramUser)
+            MagentoTerminal(self.project["magento"], self.containers, userName)
             return False
         elif commandName in ["t", "tools"]:
             # TOOLS
             if not "tools" in self.project:
                 raise Exception("In your configuration file don't have \"tools\" configuration.")
-            ToolsTerminal(self.project["tools"], self.containers, paramUser)
+            ToolsTerminal(self.project["tools"], self.containers, userName)
             return False
         elif commandName.isnumeric():
-            userName = paramUser if len(paramUser) > 0 else "root"
+            userName = userName if len(userName) else "root"
             containerName = self.containers[int(commandName)-1]
             os.system('docker exec -it --user {0} {1} /bin/bash'.format(userName, containerName))
 

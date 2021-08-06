@@ -1,20 +1,10 @@
 # Docker Compose
 
-## Docker
-Run the docker.bash file via /bin/bash.
-This will help you use docker containers.
+Use branches to switch between assemblies.
 
-## Magento
-Run the magento.bash file via /bin/bash.
-This will help you use commands Magento 2 CLI terminal.
+## Branch - projects
 
-## Docker + Magento + MySQL
-Run the docker.pyc file via python3.
-This will help you use docker containers. magento CLI and MySql.
-
-## Docker 2
-Run the docker.pyc file via python3.
-It's a good helper for work with docker projects, containers, Magento terminal, and MySql.
+Contains package - Docker Projects
 
 ## Chrome
 Configuration Google Chrome for SSL certificate.
@@ -105,41 +95,4 @@ You have an ID user elasticsearch. Use this ID in next command instead 1000.
 ```
 sudo chown -R 1000:1000 ./data/elasticsearch ./logs/elasticsearch
 ```
-
-# Docker Projects
-
-Create "projects.json" file by example:
-```json
-[
-    {
-        "name": "Magento 2",
-        "dockerPath": "/home/user/Magento 2/docker",
-        "magento": {
-            "container": "magento234_php-fpm_1",
-            "user": "www-data",
-            "groups": ["cache", "indexer", "setup"]
-        },
-        "tools": {
-            "webContainer": "magento2_nginx_1",
-            "phpContainer": "magento2_php-fpm_1",
-            "mysqlContainer": "magento2_mariadb_1",
-            "mysqlUser": "root",
-            "mysqlPassword": "1234",
-            "mysqlDumpDir": "/home/user/Magento 2/dumps",
-            "esContainer": "wheelpros_magento2_elasticsearch_1"
-        }
-    }
-]
-```
-  - **name** - Название проекта (рекомендовано)
-  - **dockerPath** - Полный путь каталога где находится docker-compose.yml файл
-  - **magento** - Конфигурация для работы модуля: magento (при использовании)
-  - **container** - Полное имя PHP контейнера (обязательно)
-  - **groups** - Группы команд которые будет видно, остальные будут скрыты (по желанию)
-  - **tools** - Конфигурация для работы модуля: tools (при использовании)
-  - **phpContainer** - Полное имя PHP контейнера (обязательно для XDebugger команд)
-  - **mysqlContainer** - Полное имя PHP контейнера (обязательно для MySQL команд)
-  - **mysqlUser** - Имя пользователя для доступа к MySQL (обязательно для MySQL команд)
-  - **mysqlPassword** - Пароль пользователя для доступа к MySQL (обязательно для MySQL команд)
-  - **mysqlDumpDir** - Полный путь для експорта/импорта базы данных
 

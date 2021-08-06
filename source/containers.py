@@ -38,11 +38,13 @@ class DockerContainers:
     # Show documentations
     def showDocumentation(self):
         General.clear()
-        self.printTitle("Extra Options")
+        self.printTitle("Containers - Extra Options")
         print("")
-        print("    u - Open container as another user [1 -u=www-data]")
-        print(" mage - Run Magento terminal")
-        print("tools - Run Tools terminal")
+        print("You can add additional parameters after the space.")
+        print("")
+        print("        u - Open container as another user [1 -u=www-data]")
+        print("m/magento - Open Magento 2 terminal.")
+        print("  t/tools - Open special tools terminal.")
         print("")
         General.pause()
 
@@ -93,13 +95,19 @@ class DockerContainers:
             # MAGE
             if not "magento" in self.project:
                 raise Exception("In your configuration file don't have \"magento\" configuration.")
-            MagentoTerminal(self.project["magento"], self.containers, userName)
+            config = self.project["magento"].copy()
+            if len(userName):
+                config["user"] = userName
+            MagentoTerminal(config, self.containers.copy())
             return False
         elif commandName in ["t", "tools"]:
             # TOOLS
             if not "tools" in self.project:
                 raise Exception("In your configuration file don't have \"tools\" configuration.")
-            ToolsTerminal(self.project["tools"], self.containers, userName)
+            config = self.project["tools"].copy()
+            if len(userName):
+                config["user"] = userName
+            ToolsTerminal(config, self.containers.copy())
             return False
         elif commandName.isnumeric():
             userName = userName if len(userName) else "root"

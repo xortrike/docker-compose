@@ -8,15 +8,11 @@ from commands import Commands
 
 class ToolsTerminal:
     # Constructor
-    def __init__(self, tools, containers, userName):
-        self.config = tools
+    def __init__(self, config, containers):
+        self.config = config
         self.containers = containers
         self.mainLoop = True
         self.openGroupByIndex = -1
-
-        # Set new user name
-        if len(userName):
-            self.config["user"] = userName
 
         self.commands = self.getCommands()
 
@@ -57,6 +53,12 @@ class ToolsTerminal:
                 "commands": [
                     {"name": "Indexs", "method": "ElasticSearchIndexs"},
                     {"name": "Delete", "method": "ElasticSearchDelete"}
+                ]
+            },
+            {
+                "group": "Redis",
+                "commands": [
+                    {"name": "Flush All", "method": "RedisFlushAll"}
                 ]
             }
         ]
@@ -286,9 +288,22 @@ class ToolsTerminal:
         self.ElasticSearch()
         result = requests.get("http://localhost:9200/_cat/indices?v")
         print(result.text)
+        return True
 
     # https://www.kite.com/python/docs/requests.delete
     def ElasticSearchDelete(self, params):
         self.ElasticSearch()
         result = requests.delete("http://localhost:9200/_all")
         print(result.text)
+        return True
+
+    def Redis(self):
+        if "redisContainer" not in self.config:
+            raise Exception("In your configuration don't have a Redis container name.")
+        if self.config["redisContainer"] not in self.containers:
+            raise Exception("Container \"{0}\" not found.".format(self.config["redisContainer"]))
+
+    def RedisFlushAll(self, params):
+        container = self.config["redisContainer"]
+        os.system("docker exec -it {0} redis-cli flushall".format(container))
+        return True

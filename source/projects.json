@@ -13,7 +13,9 @@
             "mysqlContainer": "magento2_mariadb_1",
             "mysqlUser": "root",
             "mysqlPassword": "1234",
-            "mysqlDumpDir": "/home/user/Magento 2/dumps"
+            "mysqlDumpDir": "/home/user/Magento 2/dumps",
+	    "esContainer": "magento2_elasticsearch_1",
+	    "redisContainer": "magento2_redis_1"
         }
     }
 ]

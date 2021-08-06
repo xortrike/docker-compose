@@ -8,8 +8,9 @@ from commands import Commands
 
 class MagentoTerminal:
     # Constructor
-    def __init__(self, config, containers, userName):
+    def __init__(self, config, containers):
         self.config = config
+        self.containers = containers
         self.title = "Magento 2 - Terminal"
         self.commands = []
         self.mainLoop = True
@@ -19,11 +20,8 @@ class MagentoTerminal:
         if "container" not in self.config:
             raise Exception("In your configuration don't have a PHP container name.")
         # Exist container by name
-        if self.config["container"] not in containers:
+        if self.config["container"] not in self.containers:
             raise Exception("Container \"{0}\" not running.".format(self.config["container"]))
-        # Set new user name
-        if len(userName):
-            self.config["user"] = userName
 
         self.commands = self.readCommandsList()
         if not self.commands or len(self.commands) == 0:

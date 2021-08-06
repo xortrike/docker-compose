@@ -9,7 +9,8 @@ from containers import DockerContainers
 
 class DockerProjects:
     # Constructor
-    def __init__(self):
+    def __init__(self, version):
+        self.version = version
         # Main loop
         self.mainLoop = True
         # Project ID
@@ -57,25 +58,26 @@ class DockerProjects:
         return False
 
     # Print title
-    def printTitle(self, title):
-        print("\033[48;5;4m            \033[1m\033[97m{0}\x1B[K\033[0m".format(title))
+    def printTitle(self, title, version = ""):
+        print("\033[48;5;4m            \033[1m\033[97m{0}{1}\x1B[K\033[0m".format(title, version))
 
     # Show documentations
     def showDocumentation(self):
         General.clear()
-        self.printTitle("Extra Options")
-        print("We can add extra options via plus.")
+        self.printTitle("Projects - Extra Options")
         print("")
-        print("s - Stop all containers [1 s]")
-        print("d - Down all containers [1 d]")
-        print("b - Build all containers [1 b]")
+        print("You can add additional parameters after the space.")
+        print("")
+        print("s - Stop all containers.")
+        print("d - Down all containers.")
+        print("b - Build all containers.")
         print("")
         General.pause()
 
     # Show projects
     def showProjects(self):
         General.clear()
-        self.printTitle("Docker - Projects")
+        self.printTitle("Docker - Projects", " v"+self.version)
         i = 1
         print("")
         for project in self.projects:

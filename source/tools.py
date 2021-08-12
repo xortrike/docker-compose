@@ -88,7 +88,7 @@ class ToolsTerminal:
         General.clear()
         self.printTitle("Extra Options")
         print("")
-        print("MySQL - 1 dbname")
+        print("MySQL - 1.1 dbname")
         print("")
         input("Press [Enter] key to continue...")
 
@@ -286,6 +286,7 @@ class ToolsTerminal:
     # https://www.kite.com/python/docs/requests.get
     def ElasticSearchIndexs(self, params):
         self.ElasticSearch()
+        print("\033[33m{0}\033[0m".format("[elasticsearch] [get indexs]"))
         result = requests.get("http://localhost:9200/_cat/indices?v")
         print(result.text)
         return True
@@ -293,6 +294,7 @@ class ToolsTerminal:
     # https://www.kite.com/python/docs/requests.delete
     def ElasticSearchDelete(self, params):
         self.ElasticSearch()
+        print("\033[33m{0}\033[0m".format("[elasticsearch] [delete all]"))
         result = requests.delete("http://localhost:9200/_all")
         print(result.text)
         return True
@@ -304,6 +306,9 @@ class ToolsTerminal:
             raise Exception("Container \"{0}\" not found.".format(self.config["redisContainer"]))
 
     def RedisFlushAll(self, params):
+        self.Redis()
+        # print("\033[38;5;208m{0}\033[0m\n".format("[redis-cli] [flushall]")) - orange
+        print("\033[33m{0}\033[0m".format("[redis-cli] [flushall]"))
         container = self.config["redisContainer"]
         os.system("docker exec -it {0} redis-cli flushall".format(container))
         return True

@@ -132,6 +132,7 @@ class MagentoTerminal:
             General.warningMessage(exc_value)
         if result == True:
             General.pause()
+        self.openGroupByIndex = -1
 
     def runCommand(self, command):
         commandName = command.getCommand()

@@ -71,8 +71,8 @@ class Command:
                 self.command = commands[0]
             self.params = Params(commands[1:])
 
-    def __str__(self):
-        return self.getCommand()
+    # def __str__(self):
+    #     return self.getCommand()
 
     # Return command
     def getCommand(self):
@@ -145,8 +145,8 @@ class Param:
         else:
             self.value = paramString
 
-    def __str__(self):
-        return self.getValue()
+    # def __str__(self):
+    #     return self.getValue()
 
     def getKey(self):
         return self.key

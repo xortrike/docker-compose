@@ -124,7 +124,7 @@ class DockerProjects:
                 projectName = self.projects[self.projectId]["name"] if "name" in self.projects[self.projectId] else "???"
                 raise Exception("Project \"{0}\" don't have docker-compose.yml file.".format(projectName))
             # Apply command
-            firstParam = command.getParam()
+            firstParam = command.getParam().getValue()
             if firstParam == "s":
                 self.stopProject()
             elif firstParam == "d":

@@ -121,6 +121,7 @@ class ToolsTerminal:
         elif commandName.isnumeric():
             commandName = int(commandName) - 1
             if command.getSubCommand() and commandName < len(self.commands):
+                self.openGroupByIndex = -1
                 subCommandName = int(command.getSubCommand()) - 1
                 if subCommandName < len(self.commands[commandName]["commands"]):
                     params = command.getParams()

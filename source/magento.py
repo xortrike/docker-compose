@@ -132,7 +132,6 @@ class MagentoTerminal:
             General.warningMessage(exc_value)
         if result == True:
             General.pause()
-        self.openGroupByIndex = -1
 
     def runCommand(self, command):
         commandName = command.getCommand()
@@ -146,6 +145,7 @@ class MagentoTerminal:
         elif commandName.isnumeric():
             commandIdx = int(commandName) - 1
             if command.getSubCommand() and commandIdx < len(self.commands):
+                self.openGroupByIndex = -1
                 subCommandIdx = int(command.getSubCommand()) - 1
                 if subCommandIdx < len(self.commands[commandIdx]["commands"]):
                     magentoCommand = self.commands[commandIdx]["commands"][subCommandIdx]["command"]

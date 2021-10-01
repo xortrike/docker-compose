@@ -135,6 +135,7 @@ class DockerProjects:
                 self.startProject()
                 runDockerContainers = DockerContainers(self.projects[self.projectId])
                 self.stopProject()
+                readline.clear_history()
                 return False
             return True
         return False

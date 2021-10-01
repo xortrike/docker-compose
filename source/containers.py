@@ -28,6 +28,10 @@ class DockerContainers:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             General.errorMessage(exc_value)
 
+    # Return project name
+    def getProjectName(self):
+        return self.project["name"] if "name" in self.project else "???"
+
     # Return containers list
     def getContainers(self):
         stream = os.popen('docker container ls --format "{{.Names}}"')
@@ -55,7 +59,7 @@ class DockerContainers:
     # Show containers list
     def showContainers(self):
         General.clear()
-        self.printTitle("Docker - Containers")
+        self.printTitle("{0} - Containers".format(self.getProjectName()))
         i = 1
         print("")
         for container in self.containers:
@@ -99,6 +103,7 @@ class DockerContainers:
             if len(userName):
                 config["user"] = userName
             MagentoTerminal(config, self.containers.copy())
+            readline.clear_history()
             return False
         elif commandName in ["t", "tools"]:
             # TOOLS
@@ -108,6 +113,7 @@ class DockerContainers:
             if len(userName):
                 config["user"] = userName
             ToolsTerminal(config, self.containers.copy())
+            readline.clear_history()
             return False
         elif commandName.isnumeric():
             userName = userName if len(userName) else "root"

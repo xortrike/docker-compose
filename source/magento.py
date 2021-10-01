@@ -27,6 +27,8 @@ class MagentoTerminal:
         if not self.commands or len(self.commands) == 0:
             raise Exception("Something went wrong.")
 
+        readline.clear_history()
+
         while self.mainLoop:
             self.showCommands()
             try:

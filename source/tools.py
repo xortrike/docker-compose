@@ -14,6 +14,8 @@ class ToolsTerminal:
         self.mainLoop = True
         self.openGroupByIndex = -1
 
+        readline.clear_history()
+
         self.commands = self.getCommands()
 
         while self.mainLoop:
@@ -27,7 +29,7 @@ class ToolsTerminal:
 
     # Title
     def printTitle(self, title):
-        print("\033[48;5;4m            \033[1m\033[97m"+title+"\x1B[K\033[0m")
+        print("\033[1;42m            \033[1m\033[97m"+title+"\x1B[K\033[0m")
 
     # Return commands toolds.
     def getCommands(self):
